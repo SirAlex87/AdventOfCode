@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class ServiceTest5 {
 
-	private List<BigInteger> listaFresh = new ArrayList<BigInteger>();
+	private List<String> rangeFresh = new ArrayList<String>();
 	private List<BigInteger> listaAvailable = new ArrayList<BigInteger>();
 	private boolean startAvailable;
 
@@ -22,14 +23,7 @@ public class ServiceTest5 {
 			if (!s.isEmpty())
 				listaAvailable.add(new BigInteger(s));
 		} else {
-			String[] splitArray = s.split("-");
-			BigInteger start = new BigInteger(splitArray[0]);
-			BigInteger end = new BigInteger(splitArray[1]);
-
-			for (BigInteger i = start; i.compareTo(end) <= 0; // i <= end
-					i = i.add(BigInteger.ONE)) {
-				listaFresh.add(i);
-			}
+			rangeFresh.add(s);			
 		}
 	}
 
@@ -37,14 +31,30 @@ public class ServiceTest5 {
 	{
 
 		int countDistinct = (int) listaAvailable.stream().distinct() // considera ogni valore una sola volta
-				.filter(listaFresh::contains) // presente nell'altra lista
+				.filter(x->isPresent(x)) // presente nell'altra lista
 				.count();
 		return countDistinct;
+	}
+	
+	
+
+	private boolean isPresent(BigInteger x) {
+		boolean check=false;
+		for (int i=0;i<rangeFresh.size();i++) {
+			String[] splitArray = rangeFresh.get(i).split("-");
+			BigInteger start = new BigInteger(splitArray[0]);
+			BigInteger end = new BigInteger(splitArray[1]);
+			check=x.compareTo(start) >= 0 && x.compareTo(end) <= 0;
+			if(check) {
+				break;
+			}
+		}
+		return check;
 	}
 
 	@Override
 	public String toString() {
-		return "ServiceTest5 [listaFresh=" + listaFresh + ", listaAvailable=" + listaAvailable + ", startAvailable="
+		return "ServiceTest5 [rangeFresh=" + rangeFresh + ", listaAvailable=" + listaAvailable + ", startAvailable="
 				+ startAvailable + "]";
 	}
 }
