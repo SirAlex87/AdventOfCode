@@ -28,13 +28,12 @@ public class Test5 {
 		String[] strParts = data.split("\n");
 
 		ServiceTest5 serviceTest5 = new ServiceTest5();
-		extracted1(strParts, serviceTest5);
-		//extracted2(strParts, serviceTest4);
+		//extracted1(strParts, serviceTest5);
+		extracted2(strParts, serviceTest5);
 	}
 
 	private static void extracted1(String[] strParts, ServiceTest5 serviceTest5) {
-		Arrays.stream(strParts)
-				.forEach(s -> serviceTest5.populateList(s));
+		Arrays.stream(strParts).forEach(s -> serviceTest5.populateList(s));
 		System.out.println(serviceTest5.toString());
 
 		System.out.println(serviceTest5.chechAvailableAreFresh());
@@ -42,23 +41,11 @@ public class Test5 {
 		// System.out.println(serviceTest1.getCount());
 	}
 
-//	private static void extracted2(String[] strParts, ServiceTest5 serviceTest5) {
-//		Arrays.stream(strParts).filter(Objects::nonNull) // evita NPE
-//				.map(String::strip) // meglio di trim() per Unicode
-//				.filter(s -> !s.isBlank()) // filtra vuote e “solo spazi”
-//				.forEach(s -> serviceTest4.populateList(s));
-//
-//		System.out.println(serviceTest4.toString());
-//		int conta = 0;
-//		int contaTot = 0;
-//		do {
-//			conta = serviceTest4.calculateRollsPaperAvailable();
-//			serviceTest4.updateLista();
-//			System.out.println(serviceTest4.toString());
-//			System.out.println(conta);
-//			contaTot += conta;
-//		} while (conta > 0);
-//		System.out.println(contaTot);
-//	}
+	private static void extracted2(String[] strParts, ServiceTest5 serviceTest5) {
+		Arrays.stream(strParts).forEach(s -> serviceTest5.populateList(s));
+		System.out.println(serviceTest5.toString());
+
+		System.out.println(serviceTest5.howManyFresh());
+	}
 
 }
