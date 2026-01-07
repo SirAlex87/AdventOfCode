@@ -20,7 +20,7 @@ public class ServiceTest7 {
 	private static int i = 0;
 	private char[][] arrayFinal = null;
 	private List<String> lista = new ArrayList<String>();
-	private Map<Integer, BigInteger> mappa = new HashMap<>();;
+	private Map<Integer, BigInteger> mappa = new HashMap<>();
 	private int conta = 0;
 
 	public void populateArray(String s) {
