@@ -39,7 +39,8 @@ public class Test9 {
 	private static void extracted1(String data, ServiceTest9 serviceTest9) {
 		String[] strParts = data.split("\n");
 		Arrays.stream(strParts).forEach(s -> serviceTest9.populateList(s));
-		System.out.println("l'area più grande è:"+serviceTest9.calculateLargerArea());
+		serviceTest9.calculateDistance2();
+		System.out.println("l'area più grande è:"+serviceTest9.calculateLargerArea2());
 	}
 
 	private static void extracted2(String data, ServiceTest9 serviceTest9) {

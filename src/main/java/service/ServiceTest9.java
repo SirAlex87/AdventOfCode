@@ -8,16 +8,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import util.MinResult;
+import org.javatuples.Pair;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+
+import model.Distance;
 
 public class ServiceTest9 {
 	private List<Integer> listaY = new ArrayList<>();
 	private List<Integer> listaX = new ArrayList<>();
-	private List<List<Integer>> listaFinale=new ArrayList<>();	
+	private List<List<Integer>> listaFinale=new ArrayList<>();
+	private ListMultimap<Double, Pair<Integer, Integer>> multimap = ArrayListMultimap.create();
+	private List<Pair<Integer, Integer>> listaCoppie = new ArrayList<>();
+	private double [][] array;
 
 	public void populateList(String chiave) {
 		List<Integer> numeri = Arrays.stream(chiave.split(",")) // -1 conserva eventuali vuoti
@@ -32,7 +39,23 @@ public class ServiceTest9 {
 		listaTemp.add(numeri.get(0));
 		listaTemp.add(numeri.get(1));
 		listaFinale.add(listaTemp);
+		Pair<Integer, Integer> pair = new Pair<Integer, Integer>(numeri.get(0), numeri.get(1));
+		listaCoppie.add(pair);
 	}
+
+	public void calculateDistance2() {
+		array=new double[listaCoppie.size()][listaCoppie.size()];
+		IntStream.range(0, listaCoppie.size()).forEach(s->{
+			IntStream.range(0, listaCoppie.size()).filter(x->x!=s).forEach(x->{
+				double distance=Math.sqrt(Math.pow(listaCoppie.get(x).getValue0() -listaCoppie.get(s).getValue0(), 2) +
+                         Math.pow(listaCoppie.get(x).getValue1() - listaCoppie.get(s).getValue1(), 2));
+				array[s][x]=distance;
+				multimap.put(distance,listaCoppie.get(x));
+				multimap.put(distance,listaCoppie.get(s));
+			});
+		});
+		
+	}	
 
 	private Optional<Integer> findMin(List<Integer> lista) {
 
@@ -40,43 +63,44 @@ public class ServiceTest9 {
 
 	}
 	
-	private Optional<Integer> findMax(List<Integer> lista) {
+	private Optional<Double> findMax(List<Double> lista) {
 
 		return lista.stream().max(Comparator.naturalOrder());
 
 	}
 	
-	private Optional<Integer> findMinXAssociatedToY(Integer value) {
-
-		List listTemp=listaFinale.stream().filter(el->el.get(0).equals(value)).map(el->el.get(1)).toList();
-		return this.findMin(listTemp);
-
-	}
-	
-	private Optional<Integer> findMaxAssociatedToY(Integer value) {
-
-		List listTemp=listaFinale.stream().filter(el->el.get(0).equals(value)).map(el->el.get(1)).toList();
-		return this.findMax(listTemp);
-
-	}
-	
-	public BigInteger calculateLargerArea() {
-		Optional<Integer> maxListaY=this.findMax(listaY);
-		Optional<Integer> minListaX=this.findMinXAssociatedToY(maxListaY.get());		
-		Optional<Integer> minListaY=this.findMin(listaY);
-		Optional<Integer> maxListaX=this.findMaxAssociatedToY(minListaY.get());
-		//calcolo area 1
-		BigInteger area1=BigInteger.valueOf((maxListaY.get()-minListaY.get()+1)*(maxListaX.get()-minListaX.get()+1));
+	public BigInteger calculateLargerArea2() {
+			
+		Optional<Double> maxDistance=this.findMax(multimap.keySet().stream().toList());
+		multimap.get(maxDistance.get());
+		Pair<Integer, Integer> firstCouple= multimap.get(maxDistance.get()).get(0);
+		Pair<Integer, Integer> secondCouple= multimap.get(maxDistance.get()).get(1);
+		BigInteger coordinataY1=null;
+		BigInteger coordinataY2=null;
+		BigInteger coordinataX1=null;
+		BigInteger coordinataX2=null;
 		
-		maxListaY=this.findMax(listaY);
-		maxListaX=this.findMaxAssociatedToY(maxListaY.get());		
-		minListaY=this.findMin(listaY);
-		minListaX=this.findMinXAssociatedToY(minListaY.get());
+		if(firstCouple.getValue0()>secondCouple.getValue0()) {
+			coordinataY1=BigInteger.valueOf(firstCouple.getValue0());
+			coordinataY2=BigInteger.valueOf(secondCouple.getValue0());
+		}
+		else {
+			coordinataY1=BigInteger.valueOf(secondCouple.getValue0());
+			coordinataY2=BigInteger.valueOf(firstCouple.getValue0());
+		}
 		
-		//calcolo area2
-		BigInteger area2=BigInteger.valueOf((maxListaY.get()-minListaY.get()+1)*(maxListaX.get()-minListaX.get()+1));
+		if(firstCouple.getValue1()>secondCouple.getValue1()) {
+			coordinataX1=BigInteger.valueOf(firstCouple.getValue1());
+			coordinataX2=BigInteger.valueOf(secondCouple.getValue1());
+		}
+		else {
+			coordinataX1=BigInteger.valueOf(secondCouple.getValue1());
+			coordinataX2=BigInteger.valueOf(firstCouple.getValue1());
+		}
 		
-		return area1.compareTo(area2)>0?area1:area2;
-	}
+		BigInteger area1=(coordinataY1.subtract(coordinataY2).add(BigInteger.ONE)).multiply(coordinataX1.subtract(coordinataX2).add(BigInteger.ONE));
+
+		return area1;
+		}
 
 }
