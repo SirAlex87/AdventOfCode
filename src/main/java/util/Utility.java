@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Utility {
 	
@@ -37,6 +39,33 @@ public class Utility {
 		}
 		return data;
 	}
+	
+
+public static List<String> trasponi(List<String> input) {
+        List<String> risultato = new ArrayList<>();
+
+        if (input == null || input.isEmpty()) {
+            return risultato;
+        }
+
+        int maxLen = input.stream()
+                          .mapToInt(String::length)
+                          .max()
+                          .orElse(0);
+
+        for (int i = 0; i < maxLen; i++) {
+            StringBuilder sb = new StringBuilder();
+            for (String s : input) {
+                if (s != null && i < s.length()) {
+                    sb.append(s.charAt(i));
+                }
+            }
+            risultato.add(sb.toString());
+        }
+
+        return risultato;
+    }
+
 	
 
 }

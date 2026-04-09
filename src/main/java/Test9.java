@@ -32,8 +32,8 @@ public class Test9 {
 		
 
 		ServiceTest9 serviceTest9 = new ServiceTest9();
-		extracted1(data, serviceTest9);
-		//extracted2(data, serviceTest9);
+		//extracted1(data, serviceTest9);
+		extracted2ThirdVersion(data, serviceTest9);
 	}
 
 	private static void extracted1(String data, ServiceTest9 serviceTest9) {
@@ -43,8 +43,46 @@ public class Test9 {
 		System.out.println("l'area più grande è:"+serviceTest9.calculateLargerArea2());
 	}
 
-	private static void extracted2(String data, ServiceTest9 serviceTest9) {
+	private static void extracted2FistVersion(String data, ServiceTest9 serviceTest9) {
 		String[] strParts = data.split("\n");
+		Arrays.stream(strParts).forEach(s -> serviceTest9.populateList(s));
+		serviceTest9.populateArray();
+		serviceTest9.printArray();
+		System.out.println();
+		serviceTest9.greenTilesHorizonatals();
+		serviceTest9.greenTilesVerticals();
+		serviceTest9.printArray();
+		System.out.println();
+		serviceTest9.greenTilesHorizonatalsCompleteX();
+		serviceTest9.printArray();
+		serviceTest9.calculateDistance3();
+		System.out.println("l'area più grande è:"+serviceTest9.calculateLargerArea2());
+	}
+	
+	private static void extracted2SecondVersion(String data, ServiceTest9 serviceTest9) {
+		String[] strParts = data.split("\n");
+		Arrays.stream(strParts).forEach(s -> serviceTest9.populateList(s));
+		serviceTest9.populateListaSimboli();
+		//serviceTest9.printListaSimboli();
+		System.out.println();
+		serviceTest9.greenTilesHorizonatalsV2();
+		serviceTest9.printListaSimboli();
+		serviceTest9.greenTilesVerticalsV2();
+		serviceTest9.printListaSimboli();
+		System.out.println();
+		serviceTest9.greenTilesHorizonatalsCompleteXV2();
+		serviceTest9.printListaSimboli();
+		serviceTest9.calculateDistance4();
+		System.out.println("l'area più grande è:"+serviceTest9.calculateLargerArea2());
+	}
+	
+	private static void extracted2ThirdVersion(String data, ServiceTest9 serviceTest9) {
+		String[] strParts = data.split("\n");
+		Arrays.stream(strParts).forEach(s -> serviceTest9.populateList(s));
+		serviceTest9.populateListaSimboliV3();
+		serviceTest9.completeMapX();
+		serviceTest9.calculateArea();
+		System.out.println("l'area più grande è:"+serviceTest9.calculateLargerArea2());
 	}
 
 }
