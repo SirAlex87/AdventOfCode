@@ -8,8 +8,8 @@ public class Test10 {
 	public static void main(String[] args) {
 		String data = null;
 		try {
-			data = Utility.readFromInputStream("prova10Test.txt");
-			//data = Utility.readFromInputStream("prova10.txt");
+			//data = Utility.readFromInputStream("prova10Test.txt");
+			data = Utility.readFromInputStream("prova10.txt");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -25,7 +25,10 @@ public class Test10 {
 	private static void extracted1(String data, ServiceTest10 serviceTest10) {
 		String[] strParts = data.split("\n");
 		Arrays.stream(strParts).forEach(s -> serviceTest10.populateList(s));
+		serviceTest10.printMap();
 		serviceTest10.controllaStringa();
+		serviceTest10.printMap();
+		System.out.println("la somma è:"+serviceTest10.sommaMinimi());
 	}
 
 	private static void extracted2(String data, ServiceTest10 serviceTest10) {
