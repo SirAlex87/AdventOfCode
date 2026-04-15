@@ -33,7 +33,7 @@ public class ServiceTest10 {
 	private List<String> results = new ArrayList<>();
 	private Map<Integer, List<List<Integer>>> mappaBottoni = new HashMap<>();
 	private Map<Integer, List<List<Integer>>> mappaVoltage = new HashMap<>();
-	private Map<String, Integer> percorsiMinimi = new HashMap<>();
+	private ListMultimap<String, Integer> multimapPercorsiMinimi = ArrayListMultimap.create();
 
 	public void populateList(String s) {
 		results.add(s.substring(1, s.indexOf("]")));
@@ -67,33 +67,71 @@ public class ServiceTest10 {
 //		this.printMap(percorsiMinimi);
 	}
 
-	public void controllaStringa() {
-		String partenza = StringUtils.repeat(".", results.get(0).length());
+	public void controllaStringa() {		
 		for(int i=0;i<results.size();i++) {
+			String partenza = StringUtils.repeat(".", results.get(i).length());
 			String obiettivo = results.get(i);
 			System.out.print("obiettivo:" + obiettivo);
 			Map<String, MetricheStringheCoincidenti> firstResults = premiPrimiBottoni(partenza, obiettivo, i,
 					mappaBottoni.get(i));
 			Optional<List<List<Integer>>> listaObiettiviRaggiunti = this.raggiuntoObiettivo(firstResults);
 			if (listaObiettiviRaggiunti.isPresent()) {
-				percorsiMinimi.put(obiettivo, listaObiettiviRaggiunti.get().size());
-				System.out.println("----->"+percorsiMinimi.get(obiettivo));
+				multimapPercorsiMinimi.put(obiettivo, listaObiettiviRaggiunti.get().size());
+				System.out.println("----->"+multimapPercorsiMinimi.get(obiettivo));
 				continue;
 			}
-			List<Integer> listaMinimeMosse = new ArrayList<>();
-			for (String tempStringa : firstResults.keySet()) {
-				this.ripremiBottoni(i, obiettivo, firstResults, listaMinimeMosse, tempStringa,1);
+			Map<String, MetricheStringheCoincidenti> lastResults = premiPrimiBottoni(obiettivo, partenza, i,
+					mappaBottoni.get(i));
+			List<List<Integer>> listaObiettiviRaggiunti2 = this.confrontoChiavi(firstResults, lastResults);
+			if (!listaObiettiviRaggiunti2.isEmpty()) {
+				multimapPercorsiMinimi.put(obiettivo, listaObiettiviRaggiunti2.size());
+				System.out.println("----->"+multimapPercorsiMinimi.get(obiettivo));
+				continue;
 			}
-			percorsiMinimi.put(obiettivo, this.findMinLista(listaMinimeMosse).get());
-			System.out.println("----->"+percorsiMinimi.get(obiettivo));
+			while(listaObiettiviRaggiunti2.isEmpty()) {
+				firstResults=this.ripremiBottoni2(i, obiettivo, firstResults);
+				listaObiettiviRaggiunti2 = this.confrontoChiavi(firstResults, lastResults);
+				if(!listaObiettiviRaggiunti2.isEmpty()) {
+					continue;
+				}
+				lastResults=this.ripremiBottoni2(i, partenza, lastResults);
+				listaObiettiviRaggiunti2 = this.confrontoChiavi(firstResults, lastResults);
+			}
+			
+//			List<Integer> listaMinimeMosse = new ArrayList<>();
+//			for (String tempStringa : firstResults.keySet()) {
+//				this.ripremiBottoni(i, obiettivo, firstResults, listaMinimeMosse, tempStringa,1);
+//			}
+			multimapPercorsiMinimi.put(obiettivo, listaObiettiviRaggiunti2.size());
+			System.out.println("----->"+multimapPercorsiMinimi.get(obiettivo));
 		}
+
+	}
+
+	private List<List<Integer>> confrontoChiavi(Map<String, MetricheStringheCoincidenti> firstResults,
+			Map<String, MetricheStringheCoincidenti> lastResults) {
+			
+		   List<List<Integer>> listaBottoni= new ArrayList<>();
+			Set<String> chiaviComuni = new HashSet<>(firstResults.keySet());
+			chiaviComuni.retainAll(lastResults.keySet());
+			if (!chiaviComuni.isEmpty()) {
+				String chiave = chiaviComuni.iterator().next();
+				listaBottoni.addAll(firstResults.get(chiave).getBottoniPremuti());
+				listaBottoni.addAll(lastResults.get(chiave).getBottoniPremuti());
+				//this.printList(listaBottoni);
+			}
+			return listaBottoni;
 
 	}
 
 	private Map<String, MetricheStringheCoincidenti> premiPrimiBottoni(String partenza, String obiettivo,
 			int numeroStringa, List<List<Integer>> listaBottoni) {
-
-		List<List<Integer>> listaBottoniCliccabili = this.bottoniCliccabili(listaBottoni, obiettivo, partenza);
+		List<List<Integer>> listaBottoniCliccabili = new ArrayList<>();
+		if(!partenza.contains("#")) {
+			listaBottoniCliccabili = this.bottoniCliccabili(listaBottoni, obiettivo, partenza);
+		} else {
+			listaBottoniCliccabili.addAll(listaBottoni);
+		}
 		//this.printList(listaBottoniCliccabili);
 		Map<String, MetricheStringheCoincidenti> tempResults = new HashMap<>();
 		for (int i = 0; i < listaBottoniCliccabili.size(); i++) {
@@ -134,6 +172,32 @@ public class ServiceTest10 {
 			}
 		}
 		return listaMinimeMosse;
+	}
+	
+	private Map<String, MetricheStringheCoincidenti> ripremiBottoni2(int i, String obiettivo, Map<String, MetricheStringheCoincidenti> firstResults) {
+
+		Map<String, MetricheStringheCoincidenti> tempResults = new HashMap<>();
+		for (String tempStringa : firstResults.keySet()) {
+			this.premiBottoni2(tempStringa, obiettivo, mappaBottoni.get(i), firstResults.get(tempStringa), tempResults);
+		}
+		return tempResults;
+	}
+
+	private Map<String, MetricheStringheCoincidenti> premiBottoni2(String partenza, String obiettivo,
+			List<List<Integer>> listaBottoni, MetricheStringheCoincidenti metricheStringheCoincidentiPrecedenti, Map<String, MetricheStringheCoincidenti> tempResults) {
+		List<List<Integer>> listaBottoniCliccabili = new ArrayList<>();
+		listaBottoniCliccabili.addAll(listaBottoni);
+		listaBottoniCliccabili.remove(metricheStringheCoincidentiPrecedenti.getBottoniPremuti().getLast());
+		for (int i = 0; i < listaBottoniCliccabili.size(); i++) {
+			String stringaCambiata = cliccaBottone(partenza, listaBottoniCliccabili.get(i));
+			MetricheStringheCoincidenti metricheStringheCoincidenti = this.stringheCoincidenti(obiettivo,
+					stringaCambiata);
+			metricheStringheCoincidenti.getBottoniPremuti().addAll(metricheStringheCoincidentiPrecedenti.getBottoniPremuti());
+			metricheStringheCoincidenti.getBottoniPremuti().add(listaBottoniCliccabili.get(i));
+			tempResults.computeIfAbsent(stringaCambiata, k -> metricheStringheCoincidenti);			
+		}
+		//this.printMap(tempResults);
+		return tempResults;
 	}
 
 	private Map<String, MetricheStringheCoincidenti> premiBottoni(String partenza, String obiettivo, int numeroStringa,
@@ -247,8 +311,11 @@ public class ServiceTest10 {
 	}
 
 	public BigInteger sommaMinimi() {
+		multimapPercorsiMinimi.values().stream().forEach(c->{
+			System.out.println(c+",");
+		});
 		// TODO Auto-generated method stub
-		return percorsiMinimi.values().stream()
+		return multimapPercorsiMinimi.values().stream()
 		        .map(BigInteger::valueOf)
 		        .reduce(BigInteger.ZERO, BigInteger::add);
 	}
