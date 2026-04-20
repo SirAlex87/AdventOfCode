@@ -25,6 +25,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
 import model.Distance;
+import model.MetricheBottoniPremuti;
 import model.MetricheStringheCoincidenti;
 import util.Utility;
 
@@ -32,7 +33,7 @@ public class ServiceTest10 {
 
 	private List<String> results = new ArrayList<>();
 	private Map<Integer, List<List<Integer>>> mappaBottoni = new HashMap<>();
-	private Map<Integer, List<List<Integer>>> mappaVoltage = new HashMap<>();
+	private Map<Integer, List<Integer>> mappaVoltage = new HashMap<>();
 	private ListMultimap<String, Integer> multimapPercorsiMinimi = ArrayListMultimap.create();
 
 	public void populateList(String s) {
@@ -52,19 +53,19 @@ public class ServiceTest10 {
 		}
 
 		String voltage = s.substring(s.indexOf("{") + 1, s.indexOf("}"));
-		List<List<Integer>> listaTemp = mappaVoltage.get(results.size() - 1);
-		listaTemp.add(Arrays.stream(voltage.split(",")).map(Integer::parseInt)
-				.collect(Collectors.toCollection(ArrayList::new)));
+		List<Integer> listaTemp = mappaVoltage.get(results.size() - 1);
+		listaTemp=Arrays.stream(voltage.split(",")).map(Integer::parseInt)
+				.collect(Collectors.toList());
 		mappaVoltage.put(results.size() - 1, listaTemp);
 	}
 
 	public void printMap() {
-//		System.out.println("Stampa Bottoni");
-//		this.printMap(mappaBottoni);
-//		System.out.println("Stampa Voltaggio");
-//		this.printMap(mappaVoltage);
-//		System.out.println("Stampa Percorsi Minimi");
-//		this.printMap(percorsiMinimi);
+		System.out.println("Stampa Bottoni");
+		this.printMap(mappaBottoni);
+		System.out.println("Stampa Voltaggio");
+		this.printMap(mappaVoltage);
+		//System.out.println("Stampa Percorsi Minimi");
+		//this.printMap(percorsiMinimi);
 	}
 
 	public void controllaStringa() {		
@@ -318,6 +319,223 @@ public class ServiceTest10 {
 		return multimapPercorsiMinimi.values().stream()
 		        .map(BigInteger::valueOf)
 		        .reduce(BigInteger.ZERO, BigInteger::add);
+	}
+
+	public void controllaBottoni() {
+		for(int i=0;i<results.size();i++) {
+			List<Integer> partenza = new ArrayList<>(Collections.nCopies(mappaVoltage.get(i).size(), 0));
+			List<Integer> obiettivo = mappaVoltage.get(i);
+			System.out.print("obiettivo:" + obiettivo);
+			Map<List<Integer>, MetricheBottoniPremuti> firstResults = fase1(partenza, obiettivo,
+					mappaBottoni.get(i));
+			
+			Map<List<Integer>, MetricheBottoniPremuti> lastResults = this.fase1PartendoDaFine(obiettivo, mappaBottoni.get(i));
+			List<List<Integer>> listaObiettiviRaggiunti= new ArrayList<>();
+			
+			while(listaObiettiviRaggiunti.isEmpty()) {
+				firstResults=this.ripremiBottoni(firstResults, lastResults, mappaBottoni.get(i), true);
+				listaObiettiviRaggiunti = this.confrontoChiavi2(firstResults, lastResults);
+				if(!listaObiettiviRaggiunti.isEmpty()) {
+					continue;
+				}
+				lastResults=this.ripremiBottoni(lastResults, firstResults, mappaBottoni.get(i), false);
+				listaObiettiviRaggiunti = this.confrontoChiavi2(firstResults, lastResults);
+			}
+
+			multimapPercorsiMinimi.put(obiettivo.toString(), listaObiettiviRaggiunti.size());
+			System.out.println("----->"+multimapPercorsiMinimi.get(obiettivo.toString()));
+		}
+		
+	}
+
+	private List<List<Integer>> confrontoChiavi2(Map<List<Integer>, MetricheBottoniPremuti> firstResults,
+			Map<List<Integer>, MetricheBottoniPremuti> lastResults) {
+		List<List<Integer>> listaBottoni= new ArrayList<>();
+		Set<List<Integer>> chiaviComuni = new HashSet<>(firstResults.keySet());
+		chiaviComuni.retainAll(lastResults.keySet());
+		if (!chiaviComuni.isEmpty()) {
+			List<Integer> chiave = chiaviComuni.iterator().next();
+			listaBottoni.addAll(firstResults.get(chiave).getBottoniPremuti());
+			listaBottoni.addAll(lastResults.get(chiave).getBottoniPremuti());
+			//this.printList(listaBottoni);
+		}
+		return listaBottoni;
+	}
+
+	private Map<List<Integer>, MetricheBottoniPremuti> ripremiBottoni(
+			Map<List<Integer>, MetricheBottoniPremuti> partenza,
+			Map<List<Integer>, MetricheBottoniPremuti> obiettivo, List<List<Integer>> listaBottoni, boolean first) {
+		Set<List<Integer>> chiaviPartenza = partenza.keySet();
+		Set<List<Integer>> chiaviObiettivo= obiettivo.keySet();
+		Map<List<Integer>, MetricheBottoniPremuti> tempResults = new HashMap<>();
+		for (List<Integer> chiavePartenza : chiaviPartenza) {
+			for (List<Integer> chiaveObiettivo : chiaviObiettivo) {
+				List<List<Integer>> bottoniCliccabile = this.bottoniCliccabili(chiavePartenza, chiaveObiettivo,
+						listaBottoni, first);
+				for (List<Integer> bottoneDaPremere : bottoniCliccabile) {
+					MetricheBottoniPremuti metricheBottoniPremuti = partenza.get(chiavePartenza);
+					metricheBottoniPremuti.getBottoniPremuti().add(bottoneDaPremere);
+					List<Integer> nuovaChiave = new ArrayList<>();
+					nuovaChiave.addAll(chiavePartenza);
+					this.cliccaBottone(nuovaChiave, bottoneDaPremere, first);
+					if (!tempResults.containsKey(nuovaChiave)) {
+						tempResults.put(nuovaChiave, metricheBottoniPremuti);
+					}
+
+				}
+
+			}
+		}
+		return tempResults;
+
+	}
+
+	private List<List<Integer>> bottoniCliccabili(List<Integer> chiaveFirstResult, List<Integer> chiaveLastResult,
+			List<List<Integer>> listaBottoni, boolean somma) {
+		List<List<Integer>> listaBottoniCliccabili =new ArrayList<>();
+		for (List<Integer> azione : listaBottoni) {
+
+			List<Integer> temp = new ArrayList<>(chiaveFirstResult);
+			boolean valida = true;
+
+			for (int idx : azione) {
+				if(somma) {
+					temp.set(idx, temp.get(idx) + 1);
+				}
+				else {
+					temp.set(idx, temp.get(idx) - 1);
+				}
+				
+				if(somma) {
+					if (temp.get(idx) > chiaveLastResult.get(idx)) {
+						valida = false;
+						break;
+					}
+				}
+				else {
+					if (temp.get(idx) < chiaveLastResult.get(idx)) {
+						valida = false;
+						break;
+					}
+				}
+			}
+
+			if (valida) {
+				listaBottoniCliccabili.add(azione);
+			}
+		}
+		return listaBottoniCliccabili;
+	}
+
+	private Map<List<Integer>, MetricheBottoniPremuti> fase1(List<Integer> partenza, List<Integer> obiettivo,
+			List<List<Integer>> listaBottoni) {
+		List<Integer> bottoneDaPremere= new ArrayList<>();
+		Map<List<Integer>, MetricheBottoniPremuti> mappaBottoniPremuti= new HashMap<>();
+		MetricheBottoniPremuti metricheBottoniPremuti=new MetricheBottoniPremuti();
+		do {
+			bottoneDaPremere=this.bottoneMigliore(partenza, obiettivo, listaBottoni);
+			if (bottoneDaPremere!=null) {
+				metricheBottoniPremuti.getBottoniPremuti().add(bottoneDaPremere);
+				this.cliccaBottone(partenza, bottoneDaPremere, true);
+			}
+		}
+		while(bottoneDaPremere!=null && !bottoneDaPremere.isEmpty());
+		mappaBottoniPremuti.put(partenza, metricheBottoniPremuti);
+		return mappaBottoniPremuti;
+	}
+	
+	private Map<List<Integer>, MetricheBottoniPremuti> fase1PartendoDaFine(List<Integer> partenza,
+			List<List<Integer>> listaBottoni) {
+		Map<List<Integer>, MetricheBottoniPremuti> mappaBottoniPremuti= new HashMap<>();
+		MetricheBottoniPremuti metricheBottoniPremuti=new MetricheBottoniPremuti();
+		for(int  i=0;i<listaBottoni.size();i++) {
+			this.cliccaBottone(partenza, listaBottoni.get(i), false);
+		}
+		
+		mappaBottoniPremuti.put(partenza, metricheBottoniPremuti);
+		return mappaBottoniPremuti;
+	}
+
+	private List<Integer> bottoneMigliore(List<Integer> partenza, List<Integer> obiettivo,
+			List<List<Integer>> listaBottoni) {
+
+		int maxSize = listaBottoni.stream().mapToInt(List::size).max().orElse(0);
+
+		List<List<Integer>> listeMax = listaBottoni.stream().filter(l -> l.size() == maxSize).toList();
+
+		int max =
+				IntStream.range(0, obiettivo.size())
+             // rispetto il vincolo sulla soglia
+             .filter(i -> partenza.get(i) < (obiettivo.get(i) + 1) / 2)
+             // considero solo l'obiettivo
+             .map(i -> obiettivo.get(i))
+             // prendo il massimo
+             .max()
+             .orElse(0);
+
+
+
+		List<List<Integer>> bottoniCliccabili = new ArrayList<>();
+
+		List<Integer> indici = IntStream.range(0, obiettivo.size()).filter(i -> obiettivo.get(i) == max).boxed()
+				.toList();
+
+		listeMax.stream().forEach(c -> {
+			Set<Integer> intersezione = new HashSet<>(c);
+			intersezione.retainAll(indici);
+			if (!intersezione.isEmpty()) {
+				bottoniCliccabili.add(c);
+			}
+		});
+
+		List<Integer> miglioreAzione = null;
+		int migliorScore = -1;
+
+		for (List<Integer> azione : bottoniCliccabili) {
+
+			List<Integer> temp = new ArrayList<>(partenza);
+			boolean valida = true;
+			int score = 0;
+
+			for (int idx : azione) {
+				temp.set(idx, temp.get(idx) + 1);
+
+				int soglia = (obiettivo.get(idx) + 1) / 2;
+				if (temp.get(idx) > soglia) {
+					valida = false;
+					break;
+				}
+
+				score += obiettivo.get(idx);
+			}
+
+			if (valida && score > migliorScore) {
+				migliorScore = score;
+				miglioreAzione = azione;
+			}
+		}
+		if(miglioreAzione==null && !bottoniCliccabili.isEmpty()) {
+			List<List<Integer>> bottoniCliccabiliTemp =listaBottoni.stream().filter(c->!bottoniCliccabili.contains(c)).toList();
+			if(!bottoniCliccabiliTemp.isEmpty())
+				miglioreAzione=this.bottoneMigliore(partenza, obiettivo, bottoniCliccabiliTemp);
+		}
+
+		return miglioreAzione;
+	}
+	
+	private void cliccaBottone(List<Integer> partenza, List<Integer> bottoneDaPremere, boolean somma) {
+
+		if(somma) {
+			for (int idx : bottoneDaPremere) {
+				partenza.set(idx, partenza.get(idx) + 1);
+			}
+		}
+		else {
+			for (int idx : bottoneDaPremere) {
+				partenza.set(idx, partenza.get(idx) - 1);	
+			}
+		}
+
 	}
 
 }
