@@ -35,8 +35,10 @@ public class Test10 {
 		String[] strParts = data.split("\n");
 		Arrays.stream(strParts).forEach(s -> serviceTest10.populateList(s));
 		serviceTest10.printMap();
-		serviceTest10.controllaBottoni();
-		serviceTest10.printMap();
+		//serviceTest10.controllaBottoni();
+		serviceTest10.controllaBottoni2(); //valido funziona
+		//serviceTest10.controllaBottoni3(); 
+		//serviceTest10.printMap();
 		System.out.println("la somma è:"+serviceTest10.sommaMinimi());
 	}
 	

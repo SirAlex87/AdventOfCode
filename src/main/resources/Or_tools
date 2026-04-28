@@ -1,0 +1,138 @@
+1️⃣ Punto di partenza OBBLIGATORIO (ufficiale)
+✅ Get Started with OR‑Tools for Java
+📘 Documentazione ufficiale Google
+👉 https://developers.google.com/optimization/introduction/java
+ [developers...google.com]
+Perché è importante
+
+Spiega il modello mentale corretto
+Introduce:
+
+MPSolver
+MPVariable
+MPConstraint
+MPObjective
+
+
+È la base per capire tutto il resto
+
+🎯 Studialo finché sai riscrivere gli esempi a memoria
+
+🟢 2️⃣ Esempi ufficiali in Java (CODICE REALE)
+✅ Repository GitHub – esempi Java
+📂 Codice mantenuto da Google
+👉 https://github.com/google/or-tools/tree/stable/examples/java
+ [github.com]
+File da leggere (in ordine)
+
+LinearProgramming.java
+IntegerProgramming.java
+SimpleMipProgram.java
+
+🎯 Qui impari:
+
+come si costruisce un ILP vero
+come leggere la soluzione
+come funziona CBC dietro le quinte
+
+
+🟢 3️⃣ Capire la matematica (serve davvero)
+Se NON sai bene cos’è un ILP, OR‑Tools diventa un “incantesimo”.
+✅ Integer Linear Programming – spiegato bene
+🎥 Università / algoritmi
+👉 https://www.youtube.com/watch?v=ce9CKjbmWN0
+ [youtube.com]
+🎯 Da capire:
+
+variabili intere
+rilassamento LP
+perché ILP è NP‑hard
+perché i solver funzionano lo stesso
+
+
+🟢 4️⃣ Capire COSA fa OR‑Tools internamente (livello PRO)
+✅ Combinatorial Optimization at Google
+🎥 Talk tecnico (alto livello, ma chiarissimo)
+👉 https://www.youtube.com/watch?v=qqQ-D63X4LM
+ [youtube.com]
+🎯 Qui capisci:
+
+perché ILP è meglio di DFS / IDA*
+quando usare MIP vs CP‑SAT
+come ragionano gli ingegneri Google
+
+
+🟢 5️⃣ Documentazione Java completa (reference)
+✅ OR‑Tools Java API Reference
+📚 Tutte le classi, tutti i metodi
+👉 https://or-tools.github.io/docs/java/
+ [or-tools.github.io]
+Usala come:
+
+manuale di consultazione
+NON come primo tutorial
+
+
+🟡 6️⃣ Tutorial “narrativo” (ottimo complemento)
+✅ Linear Programming with OR‑Tools (Medium)
+📖 Spiegato passo‑passo
+👉 https://medium.com/@pauljohncronin/linear-programming-with-or-tools-e541a272c4a0
+ [medium.com]
+🎯 Utile per:
+
+capire come si costruisce un modello
+rafforzare il collegamento “problema reale → ILP”
+
+
+🧭 Percorso di studio CONSIGLIATO (riassunto)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OrdineCosa studiare✅ 1Get Started (Java)✅ 2Esempi Java ufficiali✅ 3Cos’è un ILP (video)✅ 4Talk Google✅ 5API reference✅ 6Articoli di approfondimento
+
+🧠 Consiglio personale (importante)
+Quando studi OR‑Tools, ragiona sempre così:
+
+“Quali sono le variabili?
+Quali sono i vincoli?
+Cosa devo minimizzare o massimizzare?”
+
+Se riesci a rispondere a queste tre domande, OR‑Tools farà il resto.
+
+🚀 Prossimi passi (se vuoi)
+Posso:
+
+applicare OR‑Tools passo‑passo al TUO problema dei bottoni
+confrontare ILP vs CP‑SAT
+insegnarti a capire quando un modello è sbagliato
+mostrarti debug di modelli ILP

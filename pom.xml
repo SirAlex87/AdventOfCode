@@ -39,7 +39,13 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>33.2.1-jre</version>
+		</dependency>		
+		<dependency>
+		  <groupId>com.google.ortools</groupId>
+		  <artifactId>ortools-java</artifactId>
+		  <version>9.9.3963</version>
 		</dependency>
+
 
 	</dependencies>
 
