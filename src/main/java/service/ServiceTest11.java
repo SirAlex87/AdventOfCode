@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import model.MetricheStringheCoincidenti;
 
 public class ServiceTest11 {
@@ -23,25 +25,31 @@ public class ServiceTest11 {
 		mappaConnessioni.put(chiave, valori);
 	}
 
-	public void calcolaPathArrivo() {
+	public List<String> calcolaPathArrivo(String uscita) {
 		listaChiaviArrivo=mappaConnessioni.entrySet()
 		        .stream()
-		        .filter(entry -> entry.getValue().contains("out"))
+		        .filter(entry -> entry.getValue().contains(uscita))
 		        .map(Map.Entry::getKey).toList();
+		return listaChiaviArrivo;
 	}
 
-	public void calcolaPath() {
-		List<String> valoriPartenza=mappaConnessioni.get("you");
+	public List<List<String>> calcolaPath(String partenza) {
+		List<String> valoriPartenza=mappaConnessioni.get(partenza);
 		List<List<String>> results=new ArrayList();
 		List<String> listaObiettiviRaggiunti=new ArrayList<>();
 		boolean trovato=this.proseguiPath(valoriPartenza, listaObiettiviRaggiunti, results);
-		System.out.println(results);
-		System.out.println("tutti i path sono: "+results.size());
+		//System.out.println(results);
+		//System.out.println("tutti i path sono: "+results.size());
+		return results;
 		
 	}
 
 	private boolean proseguiPath(List<String> valoriPartenza, List<String> listaObiettiviRaggiunti, List<List<String>> results) {
 		boolean trovato=false;
+		//System.out.println(valoriPartenza);
+		if( valoriPartenza==null) {
+			return false;
+		}
 		for(String nuovaChiave:valoriPartenza) {
 			if(listaObiettiviRaggiunti.contains(nuovaChiave)){
 				return false;
