@@ -3,6 +3,7 @@ package service;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,6 +17,7 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.javatuples.Pair;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -23,10 +25,11 @@ import com.google.common.collect.ListMultimap;
 import model.MetricheStringheCoincidenti;
 
 public class ServiceTest12 {
-	private Map<Integer,List<List<Integer>>> mappaForme=new HashMap<>();
+	private Map<Integer,List<Pair<Integer,Integer>>> mappaForme=new HashMap<>();
 	private ListMultimap<String,List<Integer>> mappaGriglia=ArrayListMultimap.create();
-	
-	public Integer populateList(String s, int result) {
+	private List<List<List<Pair<Integer, Integer>>>> listaTutteCombinazioniPerGriglia=new ArrayList<>();
+	private Map<String,Boolean> mapRegioneFitted=new HashMap<>();
+	public Pair<Integer, Integer> populateList(String s, Pair<Integer, Integer> acc) {
 		if (StringUtils.isNotBlank(s)) {
 			if (s.contains("x") && s.contains(":")) {
 				String dimensioniGrigia=s.substring(0, s.indexOf(":"));
@@ -36,24 +39,26 @@ public class ServiceTest12 {
 				mappaGriglia.put(dimensioniGrigia, lista);
 
 			} else if (s.contains(":")) {
-				result = Integer.parseInt(s.substring(0, s.indexOf(":")));
-				mappaForme.put(result, new ArrayList());
+				acc = new Pair<>(Integer.parseInt(s.substring(0, s.indexOf(":"))), 0);
+				mappaForme.put(acc.getValue0(), new ArrayList());
 			} else {
-				List<List<Integer>> listaTemp = mappaForme.get(result);
-
-				List<Integer> indici = new ArrayList<>();
+				List<Pair<Integer,Integer>> indici = mappaForme.get(acc.getValue0());
+				if(!indici.isEmpty()) {
+					acc = new Pair<>(acc.getValue0(), acc.getValue1()+1);
+				}
+				int riga=acc.getValue1();
 
 				int index = StringUtils.indexOf(s, '#');
 				while (index != -1) {
-					indici.add(index);
+					Pair<Integer, Integer> pair = new Pair<>(riga, index);
+					indici.add(pair);
 					index = StringUtils.indexOf(s, '#', index + 1);
 				}
-				listaTemp.add(indici);
-				mappaForme.put(result, listaTemp);
+				mappaForme.put(acc.getValue0(), indici);
 
 			}
 		}
-		return result;
+		return acc;
 	}
 
 	@Override
@@ -63,6 +68,7 @@ public class ServiceTest12 {
 
 	public void calculateCombination() {
 		mappaGriglia.entries().stream().forEach(e->{
+			listaTutteCombinazioniPerGriglia.clear();
 			String chiave=e.getKey();
 			String[] arrayDimenstions=chiave.split("x");
 			int maxDimensionX=Integer.parseInt(arrayDimenstions[0]);
@@ -74,97 +80,135 @@ public class ServiceTest12 {
 			         .filter(i -> e.getValue().get(i) > 0)
 			         .forEach(i ->{
 			             values.put(i, e.getValue().get(i));
-			         });
-			values.entrySet().forEach(es->{
-				int chiaveForme=es.getKey();
-				List<List<Integer>> formeValori=mappaForme.get(chiaveForme);
-				IntStream.range(1, es.getValue()+1).forEach(j->{
-					calculateCombinationSelectForm(maxDimensionX, maxDimensionY,formeValori);
-				});
-			});
+			         });			
+			
+			boolean trovatoFit=true;
+			outer:
+			for (Map.Entry<Integer, Integer> es : values.entrySet()) {
+			    int chiaveForme = es.getKey();
+			    List<Pair<Integer, Integer>> formeValori = mappaForme.get(chiaveForme);
+			
+			    for (int j = 1; j <= es.getValue(); j++) {
+			        List<List<Pair<Integer, Integer>>> formeValoriListaCombinazioni =
+			            calculateCombinationSelectForm(maxDimensionX, maxDimensionY, formeValori);
+			
+			        if (formeValoriListaCombinazioni.isEmpty()) {
+			        	trovatoFit=false;
+			            break outer; 
+			        }
+			
+			        listaTutteCombinazioniPerGriglia.add(formeValoriListaCombinazioni);
+			    }
+			}
+			if(trovatoFit) {
+				mapRegioneFitted.put(chiave+"-"+e.getValue(), trovatoFit);
+			}
+
 
 		});
 		
 	}
 
-	private void calculateCombinationSelectForm(int maxDimensionX, int maxDimensionY, List<List<Integer>> formeValori) {
+	private List<List<Pair<Integer, Integer>>> calculateCombinationSelectForm(int maxDimensionX, int maxDimensionY, List<Pair<Integer,Integer>> formeValori) {
+		List<List<Pair<Integer, Integer>>> formeValoriListaCombinazioni = new ArrayList<>();
 		//noRotation
-		this.calculateCombinationSelectFormForRotation(maxDimensionX, maxDimensionY, formeValori);
+		List<List<Pair<Integer, Integer>>> formeValoriListaCombinazioniNoRotatation =this.calculateCombinationSelectFormForRotation(maxDimensionX, maxDimensionY, formeValori);
+		formeValoriListaCombinazioni.addAll(formeValoriListaCombinazioniNoRotatation);
 		//rotation+90
 		formeValori=this.rotation(formeValori);
-		this.calculateCombinationSelectFormForRotation(maxDimensionX, maxDimensionY, formeValori);
+		List<List<Pair<Integer, Integer>>> formeValoriListaCombinazioni90Rotatation =this.calculateCombinationSelectFormForRotation(maxDimensionX, maxDimensionY, formeValori);
+		formeValoriListaCombinazioni.addAll(formeValoriListaCombinazioni90Rotatation);
 		//rotation+180
 		formeValori=this.rotation(formeValori);
-		this.calculateCombinationSelectFormForRotation(maxDimensionX, maxDimensionY, formeValori);
+		List<List<Pair<Integer, Integer>>> formeValoriListaCombinazioni180Rotatation =this.calculateCombinationSelectFormForRotation(maxDimensionX, maxDimensionY, formeValori);
+		formeValoriListaCombinazioni.addAll(formeValoriListaCombinazioni180Rotatation);
 		//rotation+270
 		formeValori=this.rotation(formeValori);
-		this.calculateCombinationSelectFormForRotation(maxDimensionX, maxDimensionY, formeValori);
+		List<List<Pair<Integer, Integer>>> formeValoriListaCombinazioni270Rotatation =this.calculateCombinationSelectFormForRotation(maxDimensionX, maxDimensionY, formeValori);
+		formeValoriListaCombinazioni.addAll(formeValoriListaCombinazioni270Rotatation);
+		return formeValoriListaCombinazioni;
 	}
 
-	private List<List<Integer>> rotation(List<List<Integer>> formeValori) {
+	private List<Pair<Integer, Integer>> rotation(List<Pair<Integer, Integer>> formeValori) {
 
-		List<List<Integer>> formeValoriAfterRotation=new ArrayList<>();
-int max = formeValori.stream()
-                     .flatMap(List::stream)
-                     .mapToInt(Integer::intValue)
-                     .max()
-                     .orElseThrow();
-Map<Integer,List<Integer>> mappaForme=new HashMap<>();
-		for(int i=max;i<formeValori.size();i--) {
-			mappaForme.put(i, formeValori.get(max-i));
-		}
-		
-		for(int x=0;x<max;x++) {			
-			List<Integer> listaTemp= new ArrayList<>();
-			for(int y=0;y<max;y++) {
-				if(mappaForme.get(y).contains(x)){
-					listaTemp.add(x);
-				}
-			}	
-			formeValoriAfterRotation.add(listaTemp);
+		List<Pair<Integer, Integer>> formeValoriAfterRotation = new ArrayList<>();
+		int max = formeValori.stream().mapToInt(c -> c.getValue1()).max().orElseThrow();
+		for (Pair<Integer, Integer> pair : formeValori) {
+			Pair<Integer, Integer> nuovapair = new Pair<>(pair.getValue1(), max - pair.getValue0());
+			formeValoriAfterRotation.add(nuovapair);
 		}
 		return formeValoriAfterRotation;
-		
+
 	}
 
-	private void calculateCombinationSelectFormForRotation(int maxDimensionX, int maxDimensionY, List<List<Integer>> formeValori) {
-		List<List<List<Integer>>> formeValoriListaCombinazioni = new ArrayList<>();
+	private List<List<Pair<Integer, Integer>>> calculateCombinationSelectFormForRotation(int maxDimensionX, int maxDimensionY,
+			List<Pair<Integer, Integer>> formeValori) {
+		List<List<Pair<Integer, Integer>>> formeValoriListaCombinazioni = new ArrayList<>();
 		for (int x = 0; x < maxDimensionX; x++) {
-			if (formeValori.size() + x < maxDimensionX) {
-				for (int y = 0; y < maxDimensionY; y++) {
-					List<List<Integer>> formeValoriTemp = new ArrayList<>();
-					for (int i = 0; i < formeValori.size(); i++) {
-						List<Integer> listaAvanzata = this.avanzaY(formeValori.get(i), maxDimensionX, maxDimensionY, y);
-						if (listaAvanzata != null) {
-							formeValoriTemp.add(listaAvanzata);
-						} else {
-							break;
-						}
-					}
-					if (formeValoriTemp.size() == formeValori.size())
-						formeValoriListaCombinazioni.add(formeValoriTemp);
+			for (int y = 0; y < maxDimensionY; y++) {
+				List<Pair<Integer, Integer>> listaAvanzata = this.avanzaY(formeValori, maxDimensionY, y, maxDimensionX,
+						x);
+				if (!listaAvanzata.isEmpty() && listaAvanzata.size() == formeValori.size()) {
+					formeValoriListaCombinazioni.add(listaAvanzata);
 				}
 			}
 		}
+		return formeValoriListaCombinazioni;
 	}
 
-	private List<Integer> avanzaY(List<Integer> list, int maxDimensionX, int maxDimensionY, int y) {
+	private List<Pair<Integer, Integer>> avanzaY(List<Pair<Integer, Integer>> list, int maxDimensionY, int y, int maxDimensionX, int x) {
 		boolean superatiLimiti=false;
-		List<Integer> listTemp=new ArrayList<>();
+		boolean coordinateNonPrese=true;
+		boolean siamoAllInizio=false;
+		List<List<Pair<Integer, Integer>>> ultimaListaCombinazioni=listaTutteCombinazioniPerGriglia.isEmpty()?new ArrayList<>():listaTutteCombinazioniPerGriglia.getLast();
+		if(ultimaListaCombinazioni.isEmpty()) {
+			siamoAllInizio=true;
+		}
+		List<Pair<Integer, Integer>> listTemp=new ArrayList<>();
 		for(int i=0;i<list.size();i++) {
-			if(list.get(i)+y<=maxDimensionY) {
-				listTemp.add(list.get(i)+y);
+			if(list.get(i).getValue1()+y<maxDimensionY && list.get(i).getValue0()+x<maxDimensionX) {
+				Pair<Integer, Integer> pair = new Pair<>(list.get(i).getValue0()+x, list.get(i).getValue1()+y);
+				
+				if(siamoAllInizio) {
+					listTemp.add(pair);
+				}
+				else {
+					ultimaListaCombinazioni=this.coppiaPresa(pair,ultimaListaCombinazioni);
+					if(!ultimaListaCombinazioni.isEmpty()) {
+						listTemp.add(pair);
+					}
+					else {
+						coordinateNonPrese=false;
+						break;
+					}
+				}
+				
 			}
 			else {
 				superatiLimiti=true;
+				break;
 			}
 		}
-		if(superatiLimiti) {
-			return null;
+		if(superatiLimiti || !coordinateNonPrese) {
+			return Collections.emptyList();
 		}
 		else {    
 			return listTemp;
 		}
+	}
+
+	private List<List<Pair<Integer, Integer>>> coppiaPresa(Pair<Integer, Integer> pair, List<List<Pair<Integer, Integer>>> ultimaListaCombinazioni) {
+
+		return ultimaListaCombinazioni.stream()
+			    .filter(l -> !l.contains(pair))
+			    .toList();
+
+
+	}
+
+	public void getRegionsFitted() {
+		System.out.println(mapRegioneFitted);	
+		System.out.println("numero regioni Fitted:"+mapRegioneFitted.size());		
 	}
 	
 	

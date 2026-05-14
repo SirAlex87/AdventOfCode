@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.javatuples.Pair;
+
 import service.ServiceTest10;
 import service.ServiceTest11;
 import service.ServiceTest12;
@@ -31,12 +33,13 @@ public class Test12 {
 
 	private static void extracted1(String data, ServiceTest12 serviceTest12) {
 		String[] strParts = data.split("\n");
-		int acc = 0;		
+		Pair<Integer, Integer> acc = new Pair<>(0, 0);		
 		for (String s : strParts) {
 		    acc = serviceTest12.populateList(s, acc);
 		}
 		System.out.println(serviceTest12.toString());
 		serviceTest12.calculateCombination();
+		serviceTest12.getRegionsFitted();
 	}
 		
 
