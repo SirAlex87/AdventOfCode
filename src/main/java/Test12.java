@@ -15,9 +15,8 @@ public class Test12 {
 	public static void main(String[] args) {
 		String data = null;
 		try {
-			data = Utility.readFromInputStream("prova12Test.txt");
-			//data = Utility.readFromInputStream("prova11TestParte2.txt");
-			//data = Utility.readFromInputStream("prova12.txt");
+			 //data = Utility.readFromInputStream("prova12Test.txt");
+			data = Utility.readFromInputStream("prova12.txt");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -38,7 +37,8 @@ public class Test12 {
 		    acc = serviceTest12.populateList(s, acc);
 		}
 		System.out.println(serviceTest12.toString());
-		serviceTest12.calculateCombination();
+		serviceTest12.calculateArea();
+		//serviceTest12.calculateCombination();
 		serviceTest12.getRegionsFitted();
 	}
 		

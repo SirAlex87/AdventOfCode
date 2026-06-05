@@ -99,12 +99,9 @@ public class ServiceTest12 {
 				        }
 			    	}
 			    	else {
-			    		if(j==2) {
-			    			for(List<List<Pair<Integer, Integer>>> listaTutteCombinazioniPerGrigliaFinoAdessoTemp:listaTutteCombinazioniPerGriglia) {
+			    		for(List<List<Pair<Integer, Integer>>> listaTutteCombinazioniPerGrigliaFinoAdessoTemp:listaTutteCombinazioniPerGriglia) {
 			    				formeValoriListaCombinazioni.addAll(listaTutteCombinazioniPerGrigliaFinoAdessoTemp);
 			    			}
-			    			
-			    		}
 			    		formeValoriListaCombinazioni=calculateCombinationSelectFormRepeated(formeValoriListaCombinazioni);
 			    		
 			    	}
@@ -274,8 +271,49 @@ public class ServiceTest12 {
 	}
 
 	public void getRegionsFitted() {
-		System.out.println(mapRegioneFitted);	
-		System.out.println("numero regioni Fitted:"+mapRegioneFitted.size());		
+
+		Map<String, Boolean> mapRegioneFittedFiltered = mapRegioneFitted.entrySet()
+		    .stream()
+		    .filter(entry -> Boolean.TRUE.equals(entry.getValue()))
+		    .collect(Collectors.toMap(
+		        Map.Entry::getKey,
+		        Map.Entry::getValue
+		    ));
+
+		System.out.println(mapRegioneFittedFiltered);	
+		System.out.println("numero regioni Fitted:"+mapRegioneFittedFiltered.size());		
+	}
+
+	public void calculateArea() {
+		mappaGriglia.entries().stream().forEach(e->{
+			listaTutteCombinazioniPerGriglia.clear();
+			String chiave=e.getKey();
+			System.out.println("griglia:"+chiave);
+			String[] arrayDimenstions=chiave.split("x");
+			int maxDimensionX=Integer.parseInt(arrayDimenstions[0]);
+			int maxDimensionY=Integer.parseInt(arrayDimenstions[1]);
+			int areaGriglia=maxDimensionX*maxDimensionY;
+			int areaCalcolata=0;
+			boolean trovatoFit=false;
+			Map<Integer,Integer> values = new HashMap<>();
+
+			IntStream.range(0, e.getValue().size())
+			         .filter(i -> e.getValue().get(i) > 0)
+			         .forEach(i ->{
+			             values.put(i, e.getValue().get(i));
+			         });			
+			
+			for (Map.Entry<Integer, Integer> es : values.entrySet()) {
+			    int chiaveForme = es.getKey();
+			    System.out.println("forma:"+chiaveForme);
+			    areaCalcolata=areaCalcolata+9*es.getValue();			    
+			}
+			if(areaCalcolata<=areaGriglia) {
+				trovatoFit=true;				
+			}
+			mapRegioneFitted.put(chiave+"-"+e.getValue(), trovatoFit);
+		});
+		
 	}
 	
 	
