@@ -1,13 +1,7 @@
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 import org.javatuples.Pair;
 
-import service.ServiceTest10;
-import service.ServiceTest11;
 import service.ServiceTest12;
 import util.Utility;
 
@@ -15,8 +9,8 @@ public class Test12 {
 	public static void main(String[] args) {
 		String data = null;
 		try {
-			 //data = Utility.readFromInputStream("prova12Test.txt");
-			data = Utility.readFromInputStream("prova12.txt");
+			 data = Utility.readFromInputStream("prova12Test.txt");
+			//data = Utility.readFromInputStream("prova12.txt");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -37,8 +31,8 @@ public class Test12 {
 		    acc = serviceTest12.populateList(s, acc);
 		}
 		System.out.println(serviceTest12.toString());
-		serviceTest12.calculateArea();
-		//serviceTest12.calculateCombination();
+		//serviceTest12.calculateArea();
+		serviceTest12.calculateCombination();
 		serviceTest12.getRegionsFitted();
 	}
 		

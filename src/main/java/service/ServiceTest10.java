@@ -9,17 +9,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.javatuples.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -29,12 +26,12 @@ import com.google.ortools.linearsolver.MPObjective;
 import com.google.ortools.linearsolver.MPSolver;
 import com.google.ortools.linearsolver.MPVariable;
 
-import model.Distance;
 import model.MetricheBottoniPremuti;
 import model.MetricheStringheCoincidenti;
-import util.Utility;
 
 public class ServiceTest10 {
+	
+	private static Logger logger = LogManager.getLogger(ServiceTest10.class);
 
 	private List<String> results = new ArrayList<>();
 	private Map<Integer, List<List<Integer>>> mappaBottoni = new HashMap<>();
@@ -334,7 +331,7 @@ private int[] bestSolution = null;
 		for(int i=0;i<results.size();i++) {			
 			List<Integer> partenza = new ArrayList<>(Collections.nCopies(mappaVoltage.get(i).size(), 0));
 			List<Integer> obiettivo = mappaVoltage.get(i);
-			System.out.print("obiettivo:" + obiettivo);
+			logger.info("obiettivo:" + obiettivo);
 			Map<List<Integer>, Integer> massimoPressioniBottoni = this.massimoPressioniBottoni(mappaBottoni.get(i), obiettivo);
 			Map<List<Integer>, MetricheBottoniPremuti> firstResults = new HashMap<>();
 			firstResults.put(partenza, new MetricheBottoniPremuti());
@@ -359,7 +356,7 @@ private int[] bestSolution = null;
 //			}
 
 			multimapPercorsiMinimi.put(obiettivo.toString(), listaObiettiviRaggiunti.size());
-			System.out.println("----->"+multimapPercorsiMinimi.get(obiettivo.toString()));
+			logger.info("----->"+multimapPercorsiMinimi.get(obiettivo.toString()));
 		}
 		
 	}
@@ -370,7 +367,7 @@ private int[] bestSolution = null;
 			List<Integer> obiettivo = mappaVoltage.get(i);
 			int minPressioni=this.task2(obiettivo, mappaBottoni.get(i));
 			multimapPercorsiMinimi.put(obiettivo.toString(), minPressioni);
-			System.out.println("----->"+multimapPercorsiMinimi.get(obiettivo.toString()));
+			logger.info("----->"+multimapPercorsiMinimi.get(obiettivo.toString()));
 		}
 		
 	}
@@ -381,7 +378,7 @@ private int[] bestSolution = null;
 			List<Integer> obiettivo = mappaVoltage.get(i);
 			List<List<Integer>> listaBottoni = mappaBottoni.get(i);
 			bestSolution = new int[listaBottoni.size()];
-			System.out.print("obiettivo:" + obiettivo);
+			logger.info("obiettivo:" + obiettivo);
 			
 			int[] counters = new int[obiettivo.size()];
 			int[] used = new int[listaBottoni.size()];
@@ -390,14 +387,14 @@ private int[] bestSolution = null;
 			//dfs(0, counters, used, 0,obiettivo, listaBottoni);
 			//dfsOttimizzato(0, counters, used, 0,obiettivo, listaBottoni,memo,order);
 			this.idaStar(obiettivo, listaBottoni);
-			System.out.println("Soluzione minima:");
+			logger.info("Soluzione minima:");
 			    int total = 0;
 			    for (int j = 0; j < mappaBottoni.get(i).size(); j++) {
-			        System.out.println("Bottone " + j + ": " + bestSolution[j]);
+			    	logger.info("Bottone " + j + ": " + bestSolution[j]);
 			        total += bestSolution[j];
 			    }
 			    multimapPercorsiMinimi.put(obiettivo.toString(), total);
-				System.out.println("----->"+multimapPercorsiMinimi.get(obiettivo.toString()));
+			    logger.info("----->"+multimapPercorsiMinimi.get(obiettivo.toString()));
 				bestSolution = null;
 				best = Integer.MAX_VALUE;
 		}
@@ -445,7 +442,7 @@ private int[] bestSolution = null;
 			nuovaChiave.addAll(chiave);
 			this.cliccaBottone(nuovaChiave, bottone, true);
 			MetricheBottoniPremuti metricheBottoniPremuti = new MetricheBottoniPremuti();
-			System.out.println(chiave);
+			logger.info(chiave);
 			metricheBottoniPremuti.getBottoniPremuti().addAll(firstResults.get(chiave).getBottoniPremuti());
 			metricheBottoniPremuti.getBottoniPremuti().add(bottone);
 			Map<List<Integer>, MetricheBottoniPremuti> resultTemp = new HashMap<>();
@@ -765,15 +762,15 @@ private int[] bestSolution = null;
         MPSolver.ResultStatus result = solver.solve();
         int total = 0;
         if (result == MPSolver.ResultStatus.OPTIMAL) {
-            System.out.println("Soluzione ottima:");            
+        	logger.info("Soluzione ottima:");            
             for (int i = 0; i < x.length; i++) {
                 int val = (int) x[i].solutionValue();
                 total += val;
-                System.out.println("Bottone " + i + ": " + val);
+                logger.info("Bottone " + i + ": " + val);
             }
-            System.out.println("Totale pressioni = " + total);
+            logger.info("Totale pressioni = " + total);
         } else {
-            System.out.println("Nessuna soluzione trovata");
+        	logger.info("Nessuna soluzione trovata");
         }
         return total;
     }

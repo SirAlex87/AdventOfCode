@@ -1,28 +1,21 @@
 package service;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-
-import model.MetricheStringheCoincidenti;
 
 public class ServiceTest12 {
 	private Map<Integer,List<Pair<Integer,Integer>>> mappaForme=new HashMap<>();
@@ -89,7 +82,7 @@ public class ServiceTest12 {
 			    int chiaveForme = es.getKey();
 			    System.out.println("forma:"+chiaveForme);
 			    List<Pair<Integer, Integer>> formeValori = mappaForme.get(chiaveForme);
-			    
+			    Map<List<Pair<Integer, Integer>>, List<List<Pair<Integer, Integer>>>> mappa= new HashMap<>();
 			    for (int j = 1; j <= es.getValue(); j++) {
 			    	if(j==1) {
 			    		formeValoriListaCombinazioni=calculateCombinationSelectForm(maxDimensionX, maxDimensionY, formeValori);
@@ -99,10 +92,15 @@ public class ServiceTest12 {
 				        }
 			    	}
 			    	else {
-			    		for(List<List<Pair<Integer, Integer>>> listaTutteCombinazioniPerGrigliaFinoAdessoTemp:listaTutteCombinazioniPerGriglia) {
-			    				formeValoriListaCombinazioni.addAll(listaTutteCombinazioniPerGrigliaFinoAdessoTemp);
-			    			}
+//			    		for(List<List<Pair<Integer, Integer>>> listaTutteCombinazioniPerGrigliaFinoAdessoTemp:listaTutteCombinazioniPerGriglia) {
+//			    				formeValoriListaCombinazioni.addAll(listaTutteCombinazioniPerGrigliaFinoAdessoTemp);
+//			    			}
 			    		formeValoriListaCombinazioni=calculateCombinationSelectFormRepeated(formeValoriListaCombinazioni);
+			    		if(j==2)
+			    			mappa=mappaCombinazioni(formeValoriListaCombinazioni);
+			    		else {
+			    			
+			    		}
 			    		
 			    	}
 			//TODO prima interazione giro AS-IS con i duplicati partire invece dai possibili path del passo precedente escludendo liste che si intersecano e così via, questo per forme uguali
@@ -128,6 +126,14 @@ public class ServiceTest12 {
 		
 	}
 
+	private Map<List<Pair<Integer, Integer>>, List<List<Pair<Integer, Integer>>>> mappaCombinazioni(List<List<Pair<Integer, Integer>>> formeValoriListaCombinazioni) {
+		Map<List<Pair<Integer, Integer>>, List<List<Pair<Integer, Integer>>>> mappa= new HashMap<>();
+		for (List<Pair<Integer, Integer>> list : formeValoriListaCombinazioni) {
+			mappa.put(list, calculateCombinationSelectFormRepeated(formeValoriListaCombinazioni));
+		}
+		return mappa;
+	}
+
 	private List<List<Pair<Integer, Integer>>> calculateCombinationSelectFormRepeated(
 			List<List<Pair<Integer, Integer>>> listaFormePossibili) {
 
@@ -142,30 +148,36 @@ public class ServiceTest12 {
 		for (int i = 0; i < sets.size(); i++) {
 			Set<Pair<Integer, Integer>> current = sets.get(i);
 
-			boolean foundDisjoint = false;
-			for (int j = 0; j < sets.size(); j++) {
-				if (i == j)
-					continue;
-				Set<Pair<Integer, Integer>> other = sets.get(j);
-				// check disgiunzione
-				boolean disjoint = true;
-				for (Pair<Integer, Integer> p : current) {
-					if (other.contains(p)) {
-						disjoint = false;
-						break;
-					}
-				}
-				if (disjoint) {
-					foundDisjoint = true;
-					break; // basta una
-				}
-			}
-			if (foundDisjoint) {
+			boolean trovato=trovaDisjoint(sets, current);
+			if(trovato)
 				result.add(listaFormePossibili.get(i));
-			}
 		}
 
 		return result;
+	}
+
+	private boolean trovaDisjoint(
+			List<Set<Pair<Integer, Integer>>> sets, 
+			Set<Pair<Integer, Integer>> current) {
+		boolean foundDisjoint = false;
+		for (int j = 0; j < sets.size(); j++) {
+			if (current.equals(sets.get(j)))
+				continue;
+			Set<Pair<Integer, Integer>> other = sets.get(j);
+			// check disgiunzione
+			boolean disjoint = true;
+			for (Pair<Integer, Integer> p : current) {
+				if (other.contains(p)) {
+					disjoint = false;
+					break;
+				}
+			}
+			if (disjoint) {
+				foundDisjoint = true;
+				break; // basta una
+			}
+		}
+		return foundDisjoint;
 	}
 
 	private List<List<Pair<Integer, Integer>>> calculateCombinationSelectForm(int maxDimensionX, int maxDimensionY, List<Pair<Integer,Integer>> formeValori) {

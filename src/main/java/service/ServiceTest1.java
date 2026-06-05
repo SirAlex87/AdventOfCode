@@ -1,7 +1,12 @@
 package service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class ServiceTest1 {
-	private final static int dialStart=50;
+	private static Logger logger = LogManager.getLogger(ServiceTest1.class);
+	
+	private static final int dialStart=50;
 	private static int count=0;
 	private static int countTot=0;
 	private final int pointingNumber=0;
@@ -11,12 +16,11 @@ public class ServiceTest1 {
 	
 	public void countPassingToZero(String a) {
 		countTot++;
-		System.out.println(a);
-		String direction=a.substring(0, 1);
+		logger.info(a);
 		int number=Integer.parseInt(a.substring(1));
 		number=number%100;
 		if (number > 200) {
-			System.out.println(number);
+			logger.info(number);
 		}
 		if (a.substring(0, 1).equals("L")){
 			
@@ -35,16 +39,16 @@ public class ServiceTest1 {
 			count++;
 		}
 		beforecurrentPointer=lastCurrentPointer;
-		System.out.println(this.toString());
+		logger.info(this.toString());
 		//System.out.println(countTot);
 	}
 	
 	public void countTimesPassingToZero(String a) {
-		System.out.println(a);
+		logger.info(a);
 		String direction=a.substring(0, 1);
 		int number=Integer.parseInt(a.substring(1));
 		if (number > 200) {
-			System.out.println(number);
+			logger.info(number);
 		}
 		countTot=number/100;
 		number=number%100;		
@@ -68,7 +72,7 @@ public class ServiceTest1 {
 		
 		count=count+countTot;
 		beforecurrentPointer=lastCurrentPointer;
-		System.out.println(this.toString());
+		logger.info(this.toString());
 		//System.out.println(countTot);
 	}
 

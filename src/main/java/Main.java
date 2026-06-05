@@ -1,10 +1,12 @@
 
 import com.google.ortools.Loader;
 import com.google.ortools.linearsolver.*;
-
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Main {
+	
+	private static Logger logger = LogManager.getLogger(Main.class);
 
 public static void main(String[] args) {
         Loader.loadNativeLibraries();
@@ -60,16 +62,16 @@ public static void main(String[] args) {
         MPSolver.ResultStatus result = solver.solve();
 
         if (result == MPSolver.ResultStatus.OPTIMAL) {
-            System.out.println("Soluzione ottima:");
+        	logger.info("Soluzione ottima:");
             int total = 0;
             for (int i = 0; i < x.length; i++) {
                 int val = (int) x[i].solutionValue();
                 total += val;
-                System.out.println("Bottone " + i + ": " + val);
+                logger.info("Bottone " + i + ": " + val);
             }
-            System.out.println("Totale pressioni = " + total);
+            logger.info("Totale pressioni = " + total);
         } else {
-            System.out.println("Nessuna soluzione trovata");
+        	logger.info("Nessuna soluzione trovata");
         }
     }
 

@@ -20,7 +20,6 @@ import org.javatuples.Pair;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
-import model.Distance;
 import util.Utility;
 
 public class ServiceTest9 {

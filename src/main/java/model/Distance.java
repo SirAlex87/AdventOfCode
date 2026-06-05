@@ -1,9 +1,5 @@
 package model;
 
-import java.util.List;
-
-import org.javatuples.Pair;
-
 public class Distance {
 	
 	private Double distanceLeftTopCorner;
