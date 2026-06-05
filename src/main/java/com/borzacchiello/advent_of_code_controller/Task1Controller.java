@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 /**
  * provare sul browser http://localhost:8080/api/ciao
+ * http://localhost:8080/swagger-ui/index.html
  */
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api")
 public class Task1Controller {
 	
