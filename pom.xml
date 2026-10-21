@@ -14,11 +14,12 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
-		<!-- Imposta il livello di Java -->
-		<maven.compiler.release>21</maven.compiler.release>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
+	    <maven.compiler.release>21</maven.compiler.release>
+	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	    <maven.compiler.source>21</maven.compiler.source>
+	    <maven.compiler.target>21</maven.compiler.target>
+	
+	    <mapstruct.version>1.5.5.Final</mapstruct.version>
 	</properties>
 
 	<dependencies>
@@ -89,6 +90,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+		<!-- Database H2 temporaneo per sviluppo locale -->
+		<dependency>
+    		<groupId>com.h2database</groupId>
+    		<artifactId>h2</artifactId>
+    		<scope>runtime</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -105,13 +112,33 @@
 		<plugins>
 			<!-- Compiler plugin: compatibile con JDK 21 -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
-				<configuration>
-					<!-- release preferibile per target platform -->
-					<release>${maven.compiler.release}</release>
-				</configuration>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-compiler-plugin</artifactId>
+			    <version>3.11.0</version>
+			
+			    <configuration>
+			        <release>${maven.compiler.release}</release>
+			
+			        <annotationProcessorPaths>
+			            <path>
+			                <groupId>org.mapstruct</groupId>
+			                <artifactId>mapstruct-processor</artifactId>
+			                <version>${mapstruct.version}</version>
+			            </path>
+			
+			            <path>
+			                <groupId>org.projectlombok</groupId>
+			                <artifactId>lombok</artifactId>
+			                <version>${lombok.version}</version>
+			            </path>
+			
+			            <path>
+			                <groupId>org.projectlombok</groupId>
+			                <artifactId>lombok-mapstruct-binding</artifactId>
+			                <version>0.2.0</version>
+			            </path>
+			        </annotationProcessorPaths>
+			    </configuration>
 			</plugin>
 
 			<!-- (Opzionale) Surefire per eseguire test JUnit 5 -->
