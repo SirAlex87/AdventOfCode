@@ -1,6 +1,8 @@
 
 import com.google.ortools.Loader;
 import com.google.ortools.linearsolver.*;
+
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,33 +35,7 @@ public static void main(String[] args) {
         MPVariable[] x = new MPVariable[buttons.length];
 
         // Variabili: x[i] >= 0, intero
-        for (int i = 0; i < x.length; i++) {
-            x[i] = solver.makeIntVar(0, Double.POSITIVE_INFINITY, "x" + i);
-        }
-
-        // Vincoli sui 9 contatori
-        for (int j = 0; j < target.length; j++) {
-            MPConstraint c = solver.makeConstraint(target[j], target[j]);
-
-            for (int i = 0; i < buttons.length; i++) {
-                for (int idx : buttons[i]) {
-                    if (idx == j) {
-                        c.setCoefficient(x[i], 1);
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Funzione obiettivo: minimizzare il numero di pressioni
-        MPObjective obj = solver.objective();
-        for (MPVariable v : x) {
-            obj.setCoefficient(v, 1);
-        }
-        obj.setMinimization();
-
-        // Risolvi
-        MPSolver.ResultStatus result = solver.solve();
+        MPSolver.ResultStatus result = resoveFunction(buttons, target, solver, x);
 
         if (result == MPSolver.ResultStatus.OPTIMAL) {
         	logger.info("Soluzione ottima:");
@@ -67,13 +43,44 @@ public static void main(String[] args) {
             for (int i = 0; i < x.length; i++) {
                 int val = (int) x[i].solutionValue();
                 total += val;
-                logger.info("Bottone " + i + ": " + val);
+                logger.log(Level.INFO,"Bottone {0}:{1}",i,val);
             }
-            logger.info("Totale pressioni = " + total);
+            logger.log(Level.INFO,"Totale pressioni = {0}",total);
         } else {
         	logger.info("Nessuna soluzione trovata");
         }
     }
+
+private static MPSolver.ResultStatus resoveFunction(int[][] buttons, int[] target, MPSolver solver, MPVariable[] x) {
+	for (int i = 0; i < x.length; i++) {
+	    x[i] = solver.makeIntVar(0, Double.POSITIVE_INFINITY, "x" + i);
+	}
+
+	// Vincoli sui 9 contatori
+	for (int j = 0; j < target.length; j++) {
+	    MPConstraint c = solver.makeConstraint(target[j], target[j]);
+
+	    for (int i = 0; i < buttons.length; i++) {
+	        for (int idx : buttons[i]) {
+	            if (idx == j) {
+	                c.setCoefficient(x[i], 1);
+	                break;
+	            }
+	        }
+	    }
+	}
+
+	// Funzione obiettivo: minimizzare il numero di pressioni
+	MPObjective obj = solver.objective();
+	for (MPVariable v : x) {
+	    obj.setCoefficient(v, 1);
+	}
+	obj.setMinimization();
+
+	// Risolvi
+	return solver.solve();
+	
+}
 
 
 }

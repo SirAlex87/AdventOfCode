@@ -4,14 +4,17 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class ServiceTest2 {
 
 	private String s1;
 	private String s2;
 	private static List<BigInteger> invalidIds = new ArrayList<>();
+	private static final Logger logger = LogManager.getLogger(ServiceTest2.class);
 
 	public void countInvalidIds(String s) {
-		// System.out.println(s);
 		String[] strParts = s.split("-");
 		BigInteger a1 = new BigInteger(strParts[0]);
 		BigInteger a2 = new BigInteger(strParts[1]);
@@ -22,8 +25,8 @@ public class ServiceTest2 {
 				s1 = a.substring(0, lenght / 2);
 				s2 = a.substring(lenght / 2);
 				if (s1.equals(s2)) {
-					System.out.println(s);
-					System.out.println(this.toString());
+					logger.debug(s);
+					logger.debug(this);
 					invalidIds.add(i);
 				}
 			}
@@ -31,7 +34,6 @@ public class ServiceTest2 {
 	}
 	
 	public void countInvalidIds2(String s) {
-		// System.out.println(s);
 		String[] strParts = s.split("-");
 		BigInteger a1 = new BigInteger(strParts[0]);
 		BigInteger a2 = new BigInteger(strParts[1]);
@@ -47,11 +49,15 @@ public class ServiceTest2 {
 				}
 			}
 			if (isInvalid) {
-				System.out.println(s);
-				System.out.println(a);
+				logger.debug(s);
+				logger.debug(a);
 				invalidIds.add(i);
 			}
 		}
+	}
+	
+	public void pulisciLista() {
+		invalidIds.clear();
 	}
 
 	@Override

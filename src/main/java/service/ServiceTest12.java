@@ -102,10 +102,7 @@ public class ServiceTest12 {
 			    			
 			    		}
 			    		
-			    	}
-			//TODO prima interazione giro AS-IS con i duplicati partire invece dai possibili path del passo precedente escludendo liste che si intersecano e così via, questo per forme uguali
-			        //da capire come gestire con le altre forme
-			        
+			    	}			        
 			    }
 			    if (formeValoriListaCombinazioni.isEmpty()) {
 		        	trovatoFit=false;
@@ -311,9 +308,9 @@ public class ServiceTest12 {
 
 			IntStream.range(0, e.getValue().size())
 			         .filter(i -> e.getValue().get(i) > 0)
-			         .forEach(i ->{
-			             values.put(i, e.getValue().get(i));
-			         });			
+			         .forEach(i ->
+			             values.put(i, e.getValue().get(i))
+			         );			
 			
 			for (Map.Entry<Integer, Integer> es : values.entrySet()) {
 			    int chiaveForme = es.getKey();

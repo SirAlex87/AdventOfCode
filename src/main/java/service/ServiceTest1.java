@@ -4,23 +4,24 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ServiceTest1 {
-	private static Logger logger = LogManager.getLogger(ServiceTest1.class);
+
+	private static final Logger logger = LogManager.getLogger(ServiceTest1.class);
 	
-	private static final int dialStart=50;
-	private static int count=0;
-	private static int countTot=0;
-	private final int pointingNumber=0;
-	private static int beforecurrentPointer=dialStart;
-	private static int lastCurrentPointer;
+	private static final int DIALSTART=50;
+	private int count=0;
+	private int countTot=0;
+	private static final int POINTING_NUMBER=0;
+	private int beforecurrentPointer=DIALSTART;
+	private int lastCurrentPointer;
 	
 	
 	public void countPassingToZero(String a) {
 		countTot++;
-		logger.info(a);
+		logger.debug(a);
 		int number=Integer.parseInt(a.substring(1));
 		number=number%100;
 		if (number > 200) {
-			logger.info(number);
+			logger.debug(number);
 		}
 		if (a.substring(0, 1).equals("L")){
 			
@@ -35,20 +36,24 @@ public class ServiceTest1 {
 				lastCurrentPointer=lastCurrentPointer%100;
 			}
 		}
-		if (lastCurrentPointer==pointingNumber) {
+		if (lastCurrentPointer==POINTING_NUMBER) {
 			count++;
 		}
 		beforecurrentPointer=lastCurrentPointer;
-		logger.info(this.toString());
-		//System.out.println(countTot);
+		logger.debug(
+			    "ServiceTest1 [pointingNumber={}, beforecurrentPointer={}, lastCurrentPointer={}, count={}]",
+			    POINTING_NUMBER,
+			    beforecurrentPointer,
+			    lastCurrentPointer,
+			    count
+			);
 	}
 	
 	public void countTimesPassingToZero(String a) {
-		logger.info(a);
-		String direction=a.substring(0, 1);
+		logger.debug(a);
 		int number=Integer.parseInt(a.substring(1));
 		if (number > 200) {
-			logger.info(number);
+			logger.debug(number);
 		}
 		countTot=number/100;
 		number=number%100;		
@@ -72,31 +77,21 @@ public class ServiceTest1 {
 		
 		count=count+countTot;
 		beforecurrentPointer=lastCurrentPointer;
-		logger.info(this.toString());
-		//System.out.println(countTot);
+		logger.debug(
+			    "ServiceTest1 [pointingNumber={}, beforecurrentPointer={}, lastCurrentPointer={}, count={}]",
+			    POINTING_NUMBER,
+			    beforecurrentPointer,
+			    lastCurrentPointer,
+			    count
+			);
 	}
 
-
-	public static int getCount() {
+	public int getCount() {
 		return count;
 	}
 
 
-	public static void setCount(int count) {
-		ServiceTest1.count = count;
+	public void setCount(int count) {
+		this.count = count;
 	}
-
-
-	@Override
-	public String toString() {
-		return "ServiceTest1 [pointingNumber=" + pointingNumber + "],"
-				+"beforecurrentPointer=" + beforecurrentPointer + "],"
-				+"lastCurrentPointer=" + lastCurrentPointer + "],"
-				+"count=" + count + "]";
-	}
-	
-	
-	
-	
-
 }

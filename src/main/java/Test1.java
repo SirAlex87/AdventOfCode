@@ -1,35 +1,42 @@
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import service.ServiceTest1;
 import util.Utility;
 
 public class Test1 {
 
+	private static final Logger logger = LogManager.getLogger(Test1.class);
+	
 	public static void main(String[] args) {
 		String data = null;
 		try {
+			Test1 test1=new Test1();
 			//data = Utility.readFromInputStream("prova1Test.txt");
 			data = Utility.readFromInputStream("prova1.txt");
+			//System.out.println(data);
+			String[] strParts = data.split("\n");
+			test1.extracted1(strParts);
+			test1.extracted2(strParts);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
-		//System.out.println(data);
-		String[] strParts = data.split("\n");
-		ServiceTest1 serviceTest1 = new ServiceTest1();
-		//extracted1(strParts, serviceTest1);
-		extracted2(strParts, serviceTest1);
+		
 	}
 
-	private static void extracted1(String[] strParts, ServiceTest1 serviceTest1) {
-		Arrays.stream(strParts).forEach(s -> serviceTest1.countPassingToZero(s));
-		System.out.println(serviceTest1.getCount());
+	private void extracted1(String[] strParts) {
+		ServiceTest1 service = new ServiceTest1();
+		Arrays.stream(strParts).forEach(service::countPassingToZero);
+		logger.info(service.getCount());
 	}
 	
-	private static void extracted2(String[] strParts, ServiceTest1 serviceTest1) {
-		Arrays.stream(strParts).forEach(s -> serviceTest1.countTimesPassingToZero(s));
-		System.out.println(serviceTest1.getCount());
+	private void extracted2(String[] strParts) {
+		ServiceTest1 service = new ServiceTest1();
+		Arrays.stream(strParts).forEach(service::countTimesPassingToZero);
+		logger.info(service.getCount());
 	}
 
 }

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,6 +32,8 @@ import model.MetricheStringheCoincidenti;
 
 public class ServiceTest10 {
 	
+	private static final String STRING_ARROW = "----->";
+
 	private static Logger logger = LogManager.getLogger(ServiceTest10.class);
 
 	private List<String> results = new ArrayList<>();
@@ -66,9 +69,9 @@ private int[] bestSolution = null;
 	}
 
 	public void printMap() {
-		System.out.println("Stampa Bottoni");
+		logger.info("Stampa Bottoni");
 		this.printMap(mappaBottoni);
-		System.out.println("Stampa Voltaggio");
+		logger.info("Stampa Voltaggio");
 		this.printMap(mappaVoltage);
 		//System.out.println("Stampa Percorsi Minimi");
 		//this.printMap(percorsiMinimi);
@@ -78,21 +81,21 @@ private int[] bestSolution = null;
 		for(int i=0;i<results.size();i++) {
 			String partenza = StringUtils.repeat(".", results.get(i).length());
 			String obiettivo = results.get(i);
-			System.out.print("obiettivo:" + obiettivo);
-			Map<String, MetricheStringheCoincidenti> firstResults = premiPrimiBottoni(partenza, obiettivo, i,
+			logger.info("obiettivo:" + obiettivo);
+			Map<String, MetricheStringheCoincidenti> firstResults = premiPrimiBottoni(partenza, obiettivo,
 					mappaBottoni.get(i));
 			Optional<List<List<Integer>>> listaObiettiviRaggiunti = this.raggiuntoObiettivo(firstResults);
 			if (listaObiettiviRaggiunti.isPresent()) {
 				multimapPercorsiMinimi.put(obiettivo, listaObiettiviRaggiunti.get().size());
-				System.out.println("----->"+multimapPercorsiMinimi.get(obiettivo));
+				logger.info(STRING_ARROW+multimapPercorsiMinimi.get(obiettivo));
 				continue;
 			}
-			Map<String, MetricheStringheCoincidenti> lastResults = premiPrimiBottoni(obiettivo, partenza, i,
+			Map<String, MetricheStringheCoincidenti> lastResults = premiPrimiBottoni(obiettivo, partenza,
 					mappaBottoni.get(i));
 			List<List<Integer>> listaObiettiviRaggiunti2 = this.confrontoChiavi(firstResults, lastResults);
 			if (!listaObiettiviRaggiunti2.isEmpty()) {
 				multimapPercorsiMinimi.put(obiettivo, listaObiettiviRaggiunti2.size());
-				System.out.println("----->"+multimapPercorsiMinimi.get(obiettivo));
+				logger.info(STRING_ARROW+multimapPercorsiMinimi.get(obiettivo));
 				continue;
 			}
 			while(listaObiettiviRaggiunti2.isEmpty()) {
@@ -110,7 +113,7 @@ private int[] bestSolution = null;
 //				this.ripremiBottoni(i, obiettivo, firstResults, listaMinimeMosse, tempStringa,1);
 //			}
 			multimapPercorsiMinimi.put(obiettivo, listaObiettiviRaggiunti2.size());
-			System.out.println("----->"+multimapPercorsiMinimi.get(obiettivo));
+			logger.info(STRING_ARROW+multimapPercorsiMinimi.get(obiettivo));
 		}
 
 	}
@@ -132,7 +135,7 @@ private int[] bestSolution = null;
 	}
 
 	private Map<String, MetricheStringheCoincidenti> premiPrimiBottoni(String partenza, String obiettivo,
-			int numeroStringa, List<List<Integer>> listaBottoni) {
+			 List<List<Integer>> listaBottoni) {
 		List<List<Integer>> listaBottoniCliccabili = new ArrayList<>();
 		if(!partenza.contains("#")) {
 			listaBottoniCliccabili = this.bottoniCliccabili(listaBottoni, obiettivo, partenza);
@@ -160,7 +163,7 @@ private int[] bestSolution = null;
 //		System.out.println("stringa da analizzare:"+tempStringa);
 //		System.out.println(firstResults.get(tempStringa));
 //		System.out.println("Analizza FINE");
-		Map<String, MetricheStringheCoincidenti> tempResults = this.premiBottoni(tempStringa, obiettivo, i,
+		Map<String, MetricheStringheCoincidenti> tempResults = this.premiBottoni(tempStringa, obiettivo,
 				mappaBottoni.get(i), firstResults.get(tempStringa));
 		Map<String, MetricheStringheCoincidenti> result = this.findKeysWithMinValue(tempResults);
 		listaObiettiviRaggiunti = this.raggiuntoObiettivo(result);
@@ -168,7 +171,7 @@ private int[] bestSolution = null;
 			listaMinimeMosse.add(listaObiettiviRaggiunti.get().size());
 			return listaMinimeMosse;
 		} else {
-			if(listaMinimeMosse.size()>=1) {
+			if(!listaMinimeMosse.isEmpty()) {
 				return listaMinimeMosse;
 			}
 			if(livello<=1000) {
@@ -207,8 +210,7 @@ private int[] bestSolution = null;
 		return tempResults;
 	}
 
-	private Map<String, MetricheStringheCoincidenti> premiBottoni(String partenza, String obiettivo, int numeroStringa,
-			List<List<Integer>> listaBottoni, MetricheStringheCoincidenti metricheStringheCoincidentiPrecedenti) {
+	private Map<String, MetricheStringheCoincidenti> premiBottoni(String partenza, String obiettivo, List<List<Integer>> listaBottoni, MetricheStringheCoincidenti metricheStringheCoincidentiPrecedenti) {
 
 		List<List<Integer>> listaBottoniCliccabili = this.bottoniCliccabili(listaBottoni, obiettivo, partenza);
 		listaBottoniCliccabili.remove(metricheStringheCoincidentiPrecedenti.getBottoniPremuti().getLast());
@@ -220,18 +222,15 @@ private int[] bestSolution = null;
 					stringaCambiata);
 			metricheStringheCoincidenti.getBottoniPremuti().addAll(metricheStringheCoincidentiPrecedenti.getBottoniPremuti());
 			metricheStringheCoincidenti.getBottoniPremuti().add(listaBottoniCliccabili.get(i));
-//			if (metricheStringheCoincidentiPrecedenti.getPosNonCoincidenti().size() >= metricheStringheCoincidenti
-//					.getPosNonCoincidenti().size()) {
-			if(!tempResults.containsKey(stringaCambiata)) {
-				tempResults.put(stringaCambiata, metricheStringheCoincidenti);
-			}
+			tempResults.computeIfAbsent(stringaCambiata, k -> metricheStringheCoincidenti);	
+
 		}
 		//this.printMap(tempResults);
 		return tempResults;
 	}
 
 	private Optional<List<List<Integer>>> raggiuntoObiettivo(Map<String, MetricheStringheCoincidenti> results) {
-		return results.values().stream().filter(e -> e.getPosNonCoincidenti().size() == 0)
+		return results.values().stream().filter(e -> e.getPosNonCoincidenti().isEmpty())
 				.map(MetricheStringheCoincidenti::getBottoniPremuti).findFirst();
 	}
 
@@ -272,8 +271,6 @@ private int[] bestSolution = null;
 
 	private List<List<Integer>> bottoniCliccabili(List<List<Integer>> listaBottoni, String result, String temp) {
 		List<List<Integer>> bottoniCliccabili = new ArrayList<>();
-		char[] charsResult = result.toCharArray();
-		char[] charsTemp = temp.toCharArray();
 		MetricheStringheCoincidenti metricheStringheCoincidenti = this.stringheCoincidenti(result, temp);
 		for (int i = 0; i < listaBottoni.size(); i++) {
 			Set<Integer> intersezione = new HashSet<>(listaBottoni.get(i));
@@ -308,20 +305,18 @@ private int[] bestSolution = null;
 	}
 
 	public void printMap(Map<?, ?> map) {
-		map.forEach((key, value) -> System.out.println(key + " = " + value));
+		map.forEach((key, value) -> logger.info(key + " = " + value));
 	}
 
 	public void printList(List<?> lista) {
-		lista.forEach(v -> {
-			System.out.println(v);
-		});
+		lista.forEach(System.out::println
+		);
 	}
 
 	public BigInteger sommaMinimi() {
-		multimapPercorsiMinimi.values().stream().forEach(c->{
-			System.out.println(c+",");
-		});
-		// TODO Auto-generated method stub
+		multimapPercorsiMinimi.values().stream().forEach(c->
+			logger.info(c+",")
+		);
 		return multimapPercorsiMinimi.values().stream()
 		        .map(BigInteger::valueOf)
 		        .reduce(BigInteger.ZERO, BigInteger::add);
@@ -356,18 +351,17 @@ private int[] bestSolution = null;
 //			}
 
 			multimapPercorsiMinimi.put(obiettivo.toString(), listaObiettiviRaggiunti.size());
-			logger.info("----->"+multimapPercorsiMinimi.get(obiettivo.toString()));
+			logger.info(STRING_ARROW+multimapPercorsiMinimi.get(obiettivo.toString()));
 		}
 		
 	}
 	
 	public void controllaBottoni2() {
 		for(int i=0;i<results.size();i++) {			
-			List<Integer> partenza = new ArrayList<>(Collections.nCopies(mappaVoltage.get(i).size(), 0));
 			List<Integer> obiettivo = mappaVoltage.get(i);
 			int minPressioni=this.task2(obiettivo, mappaBottoni.get(i));
 			multimapPercorsiMinimi.put(obiettivo.toString(), minPressioni);
-			logger.info("----->"+multimapPercorsiMinimi.get(obiettivo.toString()));
+			logger.info(STRING_ARROW+multimapPercorsiMinimi.get(obiettivo.toString()));
 		}
 		
 	}
@@ -378,23 +372,19 @@ private int[] bestSolution = null;
 			List<Integer> obiettivo = mappaVoltage.get(i);
 			List<List<Integer>> listaBottoni = mappaBottoni.get(i);
 			bestSolution = new int[listaBottoni.size()];
-			logger.info("obiettivo:" + obiettivo);
+			logger.log(Level.INFO,"obiettivo:{0}" , obiettivo);
 			
-			int[] counters = new int[obiettivo.size()];
-			int[] used = new int[listaBottoni.size()];
-			Map<String, Integer> memo = new HashMap<>();
-			int[] order=computeOrder(listaBottoni, obiettivo);
 			//dfs(0, counters, used, 0,obiettivo, listaBottoni);
 			//dfsOttimizzato(0, counters, used, 0,obiettivo, listaBottoni,memo,order);
 			this.idaStar(obiettivo, listaBottoni);
 			logger.info("Soluzione minima:");
 			    int total = 0;
 			    for (int j = 0; j < mappaBottoni.get(i).size(); j++) {
-			    	logger.info("Bottone " + j + ": " + bestSolution[j]);
+			    	logger.log(Level.INFO,"Bottone {0}: {1}",j,bestSolution[j]);
 			        total += bestSolution[j];
 			    }
 			    multimapPercorsiMinimi.put(obiettivo.toString(), total);
-			    logger.info("----->"+multimapPercorsiMinimi.get(obiettivo.toString()));
+			    logger.log(Level.INFO,"{0}{1}",STRING_ARROW,multimapPercorsiMinimi.get(obiettivo.toString()));
 				bestSolution = null;
 				best = Integer.MAX_VALUE;
 		}
@@ -411,9 +401,7 @@ private int[] bestSolution = null;
 	indici =
 	        IntStream.range(0, obiettivo.size())
 	                // se esiste almeno una differenza < 0 → ritorno [-2]
-	                .filter(i -> obiettivo.get(i) - chiave.get(i) < 0)
-	                .findAny()
-	                .isPresent()
+	                .anyMatch(i -> obiettivo.get(i) - chiave.get(i) < 0)
 	        ? List.of(-2)
 	        : IntStream.range(0, obiettivo.size())
 	                // prendo tutti gli indici con differenza > 0
@@ -431,7 +419,6 @@ private int[] bestSolution = null;
 		List<List<Integer>> bottoniCliccabili = new ArrayList<>();
 		listaBottoni.stream().forEach(c -> {
 			Set<Integer> intersezione = new HashSet<>(c);
-			//intersezione.retainAll(indici);
 			if (!intersezione.isEmpty()) {
 				bottoniCliccabili.add(c);
 			}
@@ -464,81 +451,7 @@ private int[] bestSolution = null;
 			return new HashMap<>();
 		}
 	}
-
-	private List<List<Integer>> confrontoChiavi2(Map<List<Integer>, MetricheBottoniPremuti> firstResults,
-			Map<List<Integer>, MetricheBottoniPremuti> lastResults) {
-		List<List<Integer>> listaBottoni= new ArrayList<>();
-		Set<List<Integer>> chiaviComuni = new HashSet<>(firstResults.keySet());
-		chiaviComuni.retainAll(lastResults.keySet());
-		if (!chiaviComuni.isEmpty()) {
-			List<Integer> chiave = chiaviComuni.iterator().next();
-			listaBottoni.addAll(firstResults.get(chiave).getBottoniPremuti());
-			listaBottoni.addAll(lastResults.get(chiave).getBottoniPremuti());
-			this.printList(listaBottoni);
-		}
-		return listaBottoni;
-	}
-
-	private Map<List<Integer>, MetricheBottoniPremuti> ripremiBottoni(
-			Map<List<Integer>, MetricheBottoniPremuti> partenza,
-			List<List<Integer>> listaBottoni, boolean first) {
-		Set<List<Integer>> chiaviPartenza = partenza.keySet();
-		Map<List<Integer>, MetricheBottoniPremuti> tempResults = new HashMap<>();
-		for (List<Integer> chiavePartenza : chiaviPartenza) {
-			for (List<Integer> bottoneDaPremere : listaBottoni) {
-				MetricheBottoniPremuti metricheBottoniPremuti = new MetricheBottoniPremuti();
-				metricheBottoniPremuti.getBottoniPremuti().addAll(partenza.get(chiavePartenza).getBottoniPremuti());
-				metricheBottoniPremuti.getBottoniPremuti().add(bottoneDaPremere);
-				List<Integer> nuovaChiave = new ArrayList<>();
-				nuovaChiave.addAll(chiavePartenza);
-				this.cliccaBottone(nuovaChiave, bottoneDaPremere, first);
-				if (!tempResults.containsKey(nuovaChiave)) {
-					tempResults.put(nuovaChiave, metricheBottoniPremuti);
-				}
-
-			}
-
-		}
-		return tempResults;
-
-	}
-
-	private List<List<Integer>> bottoniCliccabili(List<Integer> chiaveFirstResult, List<Integer> chiaveLastResult,
-			List<List<Integer>> listaBottoni, boolean somma) {
-		List<List<Integer>> listaBottoniCliccabili =new ArrayList<>();
-		for (List<Integer> azione : listaBottoni) {
-
-			List<Integer> temp = new ArrayList<>(chiaveFirstResult);
-			boolean valida = true;
-
-			for (int idx : azione) {
-				if(somma) {
-					temp.set(idx, temp.get(idx) + 1);
-				}
-				else {
-					temp.set(idx, temp.get(idx) - 1);
-				}
-				
-				if(somma) {
-					if (temp.get(idx) > chiaveLastResult.get(idx)) {
-						valida = false;
-						break;
-					}
-				}
-				else {
-					if (temp.get(idx) < chiaveLastResult.get(idx)) {
-						valida = false;
-						break;
-					}
-				}
-			}
-
-			if (valida) {
-				listaBottoniCliccabili.add(azione);
-			}
-		}
-		return listaBottoniCliccabili;
-	}
+	
 
 	private Map<List<Integer>, MetricheBottoniPremuti> fase1(List<Integer> partenza, List<Integer> obiettivo,
 			List<List<Integer>> listaBottoni) {
@@ -878,74 +791,6 @@ private int[] computeOrder(List<List<Integer>> listaBottoni, List<Integer> obiet
             .toArray();
 }
 
-
-	
-	private void dfsOttimizzato(
-	        int button,
-	        int[] curCounters,
-	        int[] used,
-	        int pressesSoFar, List<Integer> obiettivo, List<List<Integer>> listaBottoni,
-	        Map<String, Integer> memo, int[] order
-	) {
-	    // Bound: già peggio del migliore
-	    if (pressesSoFar >= best) return;
-	    
-
-	 // Lower bound
-	     if (pressesSoFar + lowerBound(curCounters, obiettivo) >= best) return;
-
-
-	    // Se superiamo target → taglio
-	    if (exceeds(curCounters, obiettivo)) return;
-
-	    // Se siamo al target → aggiorna best
-	    if (isTarget(curCounters,obiettivo)) {
-	        best = pressesSoFar;
-	        System.arraycopy(used, 0, bestSolution, 0, listaBottoni.size());
-	        return;
-	    }
-
-	    // Finito bottoni
-	    if (button == listaBottoni.size()) return;
-	    
-
-	 // Memorizzazione
-	     String key = button + ":" + Arrays.toString(curCounters);
-	     Integer seen = memo.get(key);
-	     if (seen != null && seen <= pressesSoFar) return;
-	     memo.put(key, pressesSoFar);
-
-	     int b = order[button];
-
-	     // Calcolo massimo utilizzo bottone
-	     int maxTimes = Integer.MAX_VALUE;
-	     for (int idx : listaBottoni.get(b))
-	         maxTimes = Math.min(maxTimes, obiettivo.get(idx) - curCounters[idx]);
-
-	     // ulteriore bound
-	     maxTimes = Math.min(maxTimes, best - pressesSoFar);
-	     maxTimes = Math.max(0, maxTimes);
-
-
-
-	  // Esplora da grande a piccolo
-	      for (int k = maxTimes; k >= 0; k--) {
-
-	          // applica
-	          for (int idx : listaBottoni.get(b))
-	        	  curCounters[idx] += k;
-	          used[b] = k;
-
-	          dfsOttimizzato(button + 1, curCounters, used, pressesSoFar + k, obiettivo,listaBottoni, memo, order);
-
-	          // rollback
-	          for (int idx : listaBottoni.get(b))
-	        	  curCounters[idx] -= k;
-	          used[b] = 0;
-	      }
-
-	}
-	
 
 public void idaStar(
         List<Integer> obiettivo,

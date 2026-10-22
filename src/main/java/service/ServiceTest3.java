@@ -8,8 +8,12 @@ import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class ServiceTest3 {
 
+	private static final Logger logger = LogManager.getLogger(ServiceTest3.class);
 	private static List<BigInteger> voltage = new ArrayList<>();
 	private List<Integer> listaVoltage = new ArrayList<>();
 
@@ -19,7 +23,7 @@ public class ServiceTest3 {
                 .map(String::valueOf)
                 .collect(Collectors.joining());
 
-		System.out.println(convertToBigInteger);
+		logger.debug(convertToBigInteger);
 		voltage.add(new BigInteger(convertToBigInteger));
 		listaVoltage.clear();
 	}
@@ -39,7 +43,7 @@ public class ServiceTest3 {
 	}
 
 	public void findMax(String s) {
-		System.out.println(s);
+		logger.debug(s);
 		int[] arrayParts = new int[s.length()];
 
 		for (int i = 0; i < s.length(); i++) {
@@ -67,7 +71,7 @@ public class ServiceTest3 {
 	}
 	
 	public void findMax2(String s) {
-		System.out.println(s);
+		logger.debug(s);
 		int[] arrayParts = new int[s.length()];
 
 		for (int i = 0; i < s.length(); i++) {

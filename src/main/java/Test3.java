@@ -2,48 +2,51 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import service.ServiceTest3;
 import util.Utility;
 
 public class Test3 {
+	private static final Logger logger = LogManager.getLogger(Test3.class);
+	
 	public static void main(String[] args) {
 		String data = null;
 		try {
 			//data = Utility.readFromInputStream("prova3Test.txt");
 			data = Utility.readFromInputStream("prova3.txt");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// System.out.println(data);
-		String[] strParts = data.split("\n");	
 
-		
-		ServiceTest3 serviceTest3 = new ServiceTest3();
-		//extracted1(strParts, serviceTest3);
-		extracted2(strParts, serviceTest3);
+			// System.out.println(data);
+			String[] strParts = data.split("\n");	
+
+			
+			ServiceTest3 serviceTest3 = new ServiceTest3();
+			extracted1(strParts, serviceTest3);
+			//extracted2(strParts, serviceTest3);
+		} catch (IOException e) {
+			logger.error(e);
+		}
 	}
 
 	private static void extracted1(String[] strParts, ServiceTest3 serviceTest3) {
 		Arrays.stream(strParts).filter(Objects::nonNull) // evita NPE
 		.map(String::strip) // meglio di trim() per Unicode
 		.filter(s -> !s.isBlank()) // filtra vuote e “solo spazi”
-		.forEach(s -> serviceTest3.findMax(s));		
+		.forEach(serviceTest3::findMax);		
 		
-		System.out.println(serviceTest3.getVoltage());
-		System.out.println(serviceTest3.sommaVoltage());
-
-		// System.out.println(serviceTest1.getCount());
+		logger.debug(ServiceTest3.getVoltage());
+		logger.info(serviceTest3.sommaVoltage());
 	}
 
 	private static void extracted2(String[] strParts, ServiceTest3 serviceTest3) {
 		Arrays.stream(strParts).filter(Objects::nonNull) // evita NPE
 		.map(String::strip) // meglio di trim() per Unicode
 		.filter(s -> !s.isBlank()) // filtra vuote e “solo spazi”
-		.forEach(s -> serviceTest3.findMax2(s));		
+		.forEach(serviceTest3::findMax2);		
 		
-		System.out.println(serviceTest3.getVoltage());
-		System.out.println(serviceTest3.sommaVoltage());
+		logger.debug(ServiceTest3.getVoltage());
+		logger.info(serviceTest3.sommaVoltage());
 	}
 
 }

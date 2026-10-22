@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ServiceTest11 {
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+public class ServiceTest11 {
+	private static Logger logger = LogManager.getLogger(ServiceTest11.class);
 	private Map<String, List<String>> mappaConnessioni = new HashMap<>();
 	private List<String> listaChiaviArrivo = new ArrayList<>();
 	private List<String> listaChiaviDaEscludere = new ArrayList<>();
@@ -36,7 +39,7 @@ public class ServiceTest11 {
 		List<List<String>> results=new ArrayList();
 		List<String> listaObiettiviRaggiunti=new ArrayList<>();
 		boolean trovato=this.proseguiPath(valoriPartenza, listaObiettiviRaggiunti, results);
-		System.out.println(results);
+		logger.info(results);
 		//System.out.println("tutti i path sono: "+results.size());
 		return results;
 		
@@ -62,14 +65,7 @@ public class ServiceTest11 {
 		else {
 			valoriPartenza.removeAll(listaChiaviDaEscludere);
 		}
-		for(String nuovaChiave:valoriPartenza) {
-//			if(listaObiettiviRaggiunti.contains(nuovaChiave)){
-//				return false;
-//			}
-//			if(results.contains(listaObiettiviRaggiunti))
-//			{
-//				return false;
-//			}
+		for(String nuovaChiave:valoriPartenza) {			
 			if(!listaChiaviArrivo.contains(nuovaChiave)) {
 				listaObiettiviRaggiunti.add(nuovaChiave);
 				valoriPartenza=new ArrayList<>();
@@ -90,28 +86,8 @@ public class ServiceTest11 {
 			}
 			
 		}
-//		if(!listaObiettiviRaggiunti.isEmpty()) {
-//			listaObiettiviRaggiunti.remove(listaObiettiviRaggiunti.size()-1);
-//		}
 		return trovato;
 	}
-
-	private List<String> confrontoChiavi(Map<String, List<String>> firstResults,
-			Map<String, List<String>> lastResults) {
-			
-		   List<String> listaChiavi= new ArrayList<>();
-			Set<String> chiaviComuni = new HashSet<>(firstResults.keySet());
-			chiaviComuni.retainAll(lastResults.keySet());
-			if (!chiaviComuni.isEmpty()) {
-				String chiave = chiaviComuni.iterator().next();
-				listaChiavi.addAll(firstResults.get(chiave));
-				listaChiavi.addAll(lastResults.get(chiave));
-				//this.printList(listaBottoni);
-			}
-			return listaChiavi;
-
-	}
-	
 
 	public  BigInteger countPaths(
             String current,
