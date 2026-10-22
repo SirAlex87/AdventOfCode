@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+# Maven output locale
+target/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Log
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+docker-compose*.yaml
+
+# File temporanei
+*.tmp
+*.swp
+*~
