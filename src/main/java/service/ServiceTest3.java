@@ -33,6 +33,10 @@ public class ServiceTest3 {
 		return voltage.stream().reduce(BigInteger.ZERO, BigInteger::add);
 
 	}
+	
+	public void clearVoltage() {
+		voltage.clear();
+	}
 
 	public static List<BigInteger> getVoltage() {
 		return voltage;

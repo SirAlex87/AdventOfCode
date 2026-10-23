@@ -15,48 +15,45 @@ public class Test4 {
 	
 	public static void main(String[] args) {
 		String data = null;
-		List<ArrayList<String>> lista = new ArrayList<ArrayList<String>>();
 		try {
 			//data = Utility.readFromInputStream("prova4Test.txt");
 			data = Utility.readFromInputStream("prova4.txt");
 
-			// System.out.println(data);
+			logger.debug(data);
 			String[] strParts = data.split("\n");
-
-			ServiceTest4 serviceTest4 = new ServiceTest4();
-			// extracted1(strParts, serviceTest4);
-			extracted2(strParts, serviceTest4);
+			extracted1(strParts);
+			extracted2(strParts);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void extracted1(String[] strParts, ServiceTest4 serviceTest4) {
+	private static void extracted1(String[] strParts) {
+		ServiceTest4 serviceTest4 = new ServiceTest4();
 		Arrays.stream(strParts).filter(Objects::nonNull) // evita NPE
 				.map(String::strip) // meglio di trim() per Unicode
 				.filter(s -> !s.isBlank()) // filtra vuote e “solo spazi”
-				.forEach(s -> serviceTest4.populateList(s));
+				.forEach(serviceTest4::populateList);
 
-		logger.info(serviceTest4.toString());
+		logger.debug("{}", serviceTest4);
 		logger.info(serviceTest4.calculateRollsPaperAvailable());
-
-		// System.out.println(serviceTest1.getCount());
 	}
 
-	private static void extracted2(String[] strParts, ServiceTest4 serviceTest4) {
+	private static void extracted2(String[] strParts) {
+		ServiceTest4 serviceTest4 = new ServiceTest4();
 		Arrays.stream(strParts).filter(Objects::nonNull) // evita NPE
 				.map(String::strip) // meglio di trim() per Unicode
 				.filter(s -> !s.isBlank()) // filtra vuote e “solo spazi”
-				.forEach(s -> serviceTest4.populateList(s));
+				.forEach(serviceTest4::populateList);
 
-		logger.info(serviceTest4.toString());
+		logger.debug("{}", serviceTest4);
 		int conta = 0;
 		int contaTot = 0;
 		do {
 			conta = serviceTest4.calculateRollsPaperAvailable();
 			serviceTest4.updateLista();
-			logger.info(serviceTest4.toString());
-			logger.info(conta);
+			logger.debug("{}", serviceTest4);
+			logger.debug(conta);
 			contaTot += conta;
 		} while (conta > 0);
 		logger.info(contaTot);

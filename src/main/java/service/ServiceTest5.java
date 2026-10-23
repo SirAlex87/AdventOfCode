@@ -8,8 +8,9 @@ import java.util.Optional;
 
 public class ServiceTest5 {
 
-	private List<String> rangeFresh = new ArrayList<String>();
-	private List<BigInteger> listaAvailable = new ArrayList<BigInteger>();
+	private static final String LISTA_NON_CONTIENE_ELEMENTI = "lista1 non contiene elementi";
+	private List<String> rangeFresh = new ArrayList<>();
+	private List<BigInteger> listaAvailable = new ArrayList<>();
 	private boolean startAvailable;
 
 	public void populateList(String s) {
@@ -26,10 +27,9 @@ public class ServiceTest5 {
 
 	public int chechAvailableAreFresh() {
 
-		int countDistinct = (int) listaAvailable.stream().distinct() // considera ogni valore una sola volta
-				.filter(x -> isPresent(x)) // presente nell'altra lista
+		return (int) listaAvailable.stream().distinct() // considera ogni valore una sola volta
+				.filter(this::isPresent) // presente nell'altra lista
 				.count();
-		return countDistinct;
 	}
 
 	private boolean isPresent(BigInteger x) {
@@ -46,56 +46,12 @@ public class ServiceTest5 {
 		return check;
 	}
 
-//	public BigInteger howManyFresh() {
-//		BigInteger conta = BigInteger.ZERO;
-//		BigInteger[][] lista = new BigInteger[rangeFresh.size()][2];
-//		for (int i = 0; i < rangeFresh.size(); i++) {
-//			String[] splitArray = rangeFresh.get(i).split("-");
-//			BigInteger start = new BigInteger(splitArray[0]);
-//			BigInteger end = new BigInteger(splitArray[1]);
-//			if (i == 0) {
-//				lista[i][0] = start;
-//				lista[i][1] = end;
-//			} else {
-//				boolean isPresentAlreadyInArrayThisInterval = false;
-//				for (int j = 0; j < i; j++) {
-//					if (start.compareTo(lista[j][0]) >= 0 && end.compareTo(lista[j][1]) <= 0) {
-//						break;
-//					} else if (start.compareTo(lista[j][0]) >= 0 && start.compareTo(lista[j][1]) <= 0
-//							&& end.compareTo(lista[j][1]) >= 0) {
-//						lista[j][1] = end;
-//						isPresentAlreadyInArrayThisInterval = true;
-//					} else if (start.compareTo(lista[j][0]) <= 0 && end.compareTo(lista[j][0]) >= 0
-//							&& end.compareTo(lista[j][1]) <= 0) {
-//						lista[j][0] = start;
-//						isPresentAlreadyInArrayThisInterval = true;
-//					} else if (start.compareTo(lista[j][0]) <= 0 && end.compareTo(lista[j][1]) >= 0) {
-//						lista[j][0] = start;
-//						lista[j][1] = end;
-//						isPresentAlreadyInArrayThisInterval = true;
-//					}
-//				}
-//				if (!isPresentAlreadyInArrayThisInterval) {
-//					lista[i][0] = start;
-//					lista[i][1] = end;
-//				}
-//			}
-//
-//		}
-//		for (int j = 0; j < lista.length; j++) {
-//			conta = conta.add(lista[j][1].subtract(lista[j][0]));
-//		}
-//
-//		return conta;
-//	}
-
 	public BigInteger howManyFresh() {
 		BigInteger conta = BigInteger.ZERO;
-		BigInteger[][] arrayLista = new BigInteger[rangeFresh.size()][2];
-		List<BigInteger> lista1 = new ArrayList<BigInteger>();
-		List<BigInteger> lista2 = new ArrayList<BigInteger>();
-		List<BigInteger> listaFinale1 = new ArrayList<BigInteger>();
-		List<BigInteger> listaFinale2 = new ArrayList<BigInteger>();
+		List<BigInteger> lista1 = new ArrayList<>();
+		List<BigInteger> lista2 = new ArrayList<>();
+		List<BigInteger> listaFinale1 = new ArrayList<>();
+		List<BigInteger> listaFinale2 = new ArrayList<>();
 		for (int i = 0; i < rangeFresh.size(); i++) {
 			String[] splitArray = rangeFresh.get(i).split("-");
 			BigInteger start = new BigInteger(splitArray[0]);
@@ -103,38 +59,36 @@ public class ServiceTest5 {
 			lista1.add(start);
 			lista2.add(end);
 		}
-
-		Optional<BigInteger> min = Optional.ofNullable(BigInteger.ZERO);
-		Optional<BigInteger> max = Optional.ofNullable(BigInteger.ZERO);
-		Optional<BigInteger> min2 = Optional.ofNullable(BigInteger.ZERO);
+		BigInteger min;
+		BigInteger max;
+		BigInteger min2;
 		for (int i = 0; i < rangeFresh.size(); i++) {
 			if (i == 0) {
-				min = lista1.stream().min(Comparator.naturalOrder());
-				listaFinale1.add(min.get());
-				lista1.remove(min.get());
-				min2 = lista2.stream().min(Comparator.naturalOrder());
-				listaFinale2.add(min2.get());
-				lista2.remove(min2.get());
+				min = lista1.stream()
+				        .min(Comparator.naturalOrder())
+				        .orElseThrow(() -> new IllegalStateException(LISTA_NON_CONTIENE_ELEMENTI));
+				listaFinale1.add(min);
+				lista1.remove(min);
+				min2 = lista2.stream().min(Comparator.naturalOrder()).orElseThrow(() -> new IllegalStateException(LISTA_NON_CONTIENE_ELEMENTI));
+				listaFinale2.add(min2);
+				lista2.remove(min2);
 			} else {
-				min = lista1.stream().min(Comparator.naturalOrder());
-				max = listaFinale2.stream().max(Comparator.naturalOrder());
-				if (min.get().compareTo(max.get()) <= 0) {
-					listaFinale1.add(max.get().add(BigInteger.ONE));
+				min = lista1.stream().min(Comparator.naturalOrder()).orElseThrow(() -> new IllegalStateException(LISTA_NON_CONTIENE_ELEMENTI));
+				max = listaFinale2.stream().max(Comparator.naturalOrder()).orElseThrow(() -> new IllegalStateException(LISTA_NON_CONTIENE_ELEMENTI));
+				if (min.compareTo(max) <= 0) {
+					listaFinale1.add(max.add(BigInteger.ONE));
+				} else {
+					listaFinale1.add(min);
 				}
-				else {
-					listaFinale1.add(min.get());
-				}
-				lista1.remove(min.get());
-				min2 = lista2.stream().min(Comparator.naturalOrder());
-				listaFinale2.add(min2.get());
-				lista2.remove(min2.get());
+				lista1.remove(min);
+				min2 = lista2.stream().min(Comparator.naturalOrder()).orElseThrow(() -> new IllegalStateException(LISTA_NON_CONTIENE_ELEMENTI));
+				listaFinale2.add(min2);
+				lista2.remove(min2);
 			}
 		}
-
 		for (int j = 0; j < rangeFresh.size(); j++) {
 			conta = conta.add(listaFinale2.get(j).subtract(listaFinale1.get(j)).add(BigInteger.ONE));
 		}
-
 		return conta;
 	}
 

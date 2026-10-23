@@ -10,7 +10,7 @@ import service.ServiceTest6;
 import util.Utility;
 
 public class Test6 {
-	private static Logger logger = LogManager.getLogger(Test6.class);
+	private static final Logger logger = LogManager.getLogger(Test6.class);
 	
 	public static void main(String[] args) {
 		String data = null;
@@ -18,15 +18,14 @@ public class Test6 {
 		try {
 			//data = Utility.readFromInputStream("prova6Test.txt");
 			data = Utility.readFromInputStream("prova6.txt");
-			// System.out.println(data);
+			logger.debug(data);
 			
 
 			ServiceTest6 serviceTest6 = new ServiceTest6();
 			//extracted1(data, serviceTest6);
 			extracted2(data, serviceTest6);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
 		
 	}
@@ -52,7 +51,7 @@ public class Test6 {
 		}).toArray(String[]::new);
 
 		serviceTest6.initilizeArray(strParts2);
-		Arrays.stream(strParts2).forEach(s -> serviceTest6.populateArray(s));
+		Arrays.stream(strParts2).forEach(serviceTest6::populateArray);
 		logger.info(serviceTest6.calculate());
 
 		//System.out.println(serviceTest6.chechAvailableAreFresh());

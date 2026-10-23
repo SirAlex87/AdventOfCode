@@ -1,24 +1,28 @@
 package service;
 
+import org.apache.logging.log4j.Level;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class ServiceTest6 {
 
-	private static int i=0;
+	private static final Logger logger = LogManager.getLogger(ServiceTest6.class);
+	private static int contatore=0;
 	private String [][] arrayFinal = null;
-	private String [][] arraySecondFinal = null;
-	List<Integer> listaPosizioniDelimitatori= new ArrayList<Integer>();
+	List<Integer> listaPosizioniDelimitatori= new ArrayList<>();
 	
 	public void populateArray(String s) {
 		String []a = s.split("-");
-		IntStream.rangeClosed(0, a.length-1).forEach(j->{
-			arrayFinal[i][j]=a[j];
-		});
-		i++;
+		IntStream.rangeClosed(0, a.length-1).forEach(j->
+			arrayFinal[contatore][j]=a[j]
+		);
+		contatore++;
 	}
 
 	public void initilizeArray(String[] strParts) {
@@ -36,17 +40,17 @@ public class ServiceTest6 {
 
 		int numColumns = arrayFinal[0].length;
 
-		for (int i = 0; i < numColumns; i++) { // scorre le righe
+		for (int x = 0; x < numColumns; x++) { // scorre le righe
 			BigInteger contoParziale = BigInteger.ZERO;
 			for (int j = arrayFinal.length - 2; j >= 0; j--) {
-				if (arrayFinal[arrayFinal.length - 1][i].equals("+")) {
-					contoParziale = contoParziale.add(new BigInteger(arrayFinal[j][i]));
+				if (arrayFinal[arrayFinal.length - 1][x].equals("+")) {
+					contoParziale = contoParziale.add(new BigInteger(arrayFinal[j][x]));
 				}
-				if (arrayFinal[arrayFinal.length - 1][i].equals("*")) {
+				if (arrayFinal[arrayFinal.length - 1][x].equals("*")) {
 					if (contoParziale.equals(BigInteger.ZERO)){
 						contoParziale=BigInteger.ONE;
 					}
-					contoParziale = contoParziale.multiply(new BigInteger(arrayFinal[j][i]));
+					contoParziale = contoParziale.multiply(new BigInteger(arrayFinal[j][x]));
 				}
 			}
 			contoFinale=contoFinale.add(contoParziale);
@@ -71,7 +75,7 @@ public class ServiceTest6 {
 					for (int k = 0; k < limite; k++) {
 						String xFinale = "";
 						for (int x = 0; x <= arrayFinal.length - 2; x++) {// righe
-							System.out.println("X:"+x+" Limite:"+limite+" k:"+k+" i:"+i+"j:"+j);
+							logger.log(Level.DEBUG,"X:{0} Limite:{1} k:{2} i:{3} j:{4}",x,limite,k,i,j);
 							String xTemp = arrayFinal[x][i].substring(limite - k-1,
 									limite -k);
 							if (xTemp.isBlank()) {
@@ -91,7 +95,7 @@ public class ServiceTest6 {
 					for (int k = 0; k < limite; k++) {
 						String xFinale = "";
 						for (int x = 0; x <= arrayFinal.length - 2; x++) {// righe
-							System.out.println("X:"+x+" Limite:"+limite+" k:"+k+" i:"+i+"j:"+j);
+							logger.log(Level.DEBUG,"X:{0} Limite:{1} k:{2} i:{3} j:{4}",x,limite,k,i,j);
 							String xTemp = arrayFinal[x][i].substring(limite - k-1,
 									limite -k);
 							if (xTemp.isBlank()) {
@@ -114,14 +118,14 @@ public class ServiceTest6 {
 		String [] strParts2 = new String [strParts.length];
 		int j=0;
 		for(String s:strParts) {
-			for(int i=0;i<listaPosizioniDelimitatori.size();i++) {
-				s=s.substring(0, listaPosizioniDelimitatori.get(i)-1)+"-"+s.substring(listaPosizioniDelimitatori.get(i));
+			for(int x=0;x<listaPosizioniDelimitatori.size();x++) {
+				s=s.substring(0, listaPosizioniDelimitatori.get(x)-1)+"-"+s.substring(listaPosizioniDelimitatori.get(x));
 			}
 			strParts2[j]=s;
 			j++;
 		}
 		this.initilizeArray(strParts2);
-		Arrays.stream(strParts2).forEach(s -> this.populateArray(s));
+		Arrays.stream(strParts2).forEach(this::populateArray);
 		
 	}
 
@@ -158,14 +162,12 @@ public class ServiceTest6 {
 
 	public void printArray() {
 
-		for (int i = 0; i < arrayFinal.length; i++) { // scorre le righe
-			for (int j = 0; j < arrayFinal[i].length; j++) { // scorre le colonne
-				System.out.print(arrayFinal[i][j] + " ");
+		for (int x = 0; x < arrayFinal.length; x++) { // scorre le righe
+			for (int j = 0; j < arrayFinal[x].length; j++) { // scorre le colonne
+				logger.log(Level.DEBUG, "{} ",arrayFinal[x][j]);
 			}
-			System.out.println(); // nuova riga per ogni riga
-		}
-
-		
+			logger.debug("\n");
+		}		
 	}
 	
 }

@@ -17,13 +17,13 @@ public class Test3 {
 			//data = Utility.readFromInputStream("prova3Test.txt");
 			data = Utility.readFromInputStream("prova3.txt");
 
-			// System.out.println(data);
+			logger.debug(data);
 			String[] strParts = data.split("\n");	
 
 			
 			ServiceTest3 serviceTest3 = new ServiceTest3();
 			extracted1(strParts, serviceTest3);
-			//extracted2(strParts, serviceTest3);
+			extracted2(strParts, serviceTest3);
 		} catch (IOException e) {
 			logger.error(e);
 		}
@@ -40,6 +40,7 @@ public class Test3 {
 	}
 
 	private static void extracted2(String[] strParts, ServiceTest3 serviceTest3) {
+		serviceTest3.clearVoltage();
 		Arrays.stream(strParts).filter(Objects::nonNull) // evita NPE
 		.map(String::strip) // meglio di trim() per Unicode
 		.filter(s -> !s.isBlank()) // filtra vuote e “solo spazi”

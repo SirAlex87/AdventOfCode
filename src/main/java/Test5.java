@@ -19,30 +19,29 @@ public class Test5 {
 			//data = Utility.readFromInputStream("prova5Test.txt");
 			data = Utility.readFromInputStream("prova5.txt");
 
-			// System.out.println(data);
+			logger.debug(data);
 			String[] strParts = data.split("\n");
 
-			ServiceTest5 serviceTest5 = new ServiceTest5();
-			//extracted1(strParts, serviceTest5);
-			extracted2(strParts, serviceTest5);
+			
+			extracted1(strParts);
+			extracted2(strParts);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
 	}
 
-	private static void extracted1(String[] strParts, ServiceTest5 serviceTest5) {
-		Arrays.stream(strParts).forEach(s -> serviceTest5.populateList(s));
-		logger.info(serviceTest5.toString());
+	private static void extracted1(String[] strParts) {
+		ServiceTest5 serviceTest5 = new ServiceTest5();
+		Arrays.stream(strParts).forEach(serviceTest5::populateList);
+		logger.debug("{}",serviceTest5);
 
 		logger.info(serviceTest5.chechAvailableAreFresh());
-
-		// System.out.println(serviceTest1.getCount());
 	}
 
-	private static void extracted2(String[] strParts, ServiceTest5 serviceTest5) {
-		Arrays.stream(strParts).forEach(s -> serviceTest5.populateList(s));
-		logger.info(serviceTest5.toString());
+	private static void extracted2(String[] strParts) {
+		ServiceTest5 serviceTest5 = new ServiceTest5();
+		Arrays.stream(strParts).forEach(serviceTest5::populateList);
+		logger.debug("{}",serviceTest5);
 
 		logger.info(serviceTest5.howManyFresh());
 	}
