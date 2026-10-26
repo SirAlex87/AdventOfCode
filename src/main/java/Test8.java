@@ -20,7 +20,7 @@ public class Test8 {
 			logger.debug(data);
 			
 			extracted1(data);
-			//extracted2(data, serviceTest8);
+			extracted2(data);
 		} catch (IOException e) {
 			logger.error(e);
 		}
@@ -47,10 +47,11 @@ public class Test8 {
 		ServiceTest8 serviceTest8 = new ServiceTest8();
 		String[] strParts = data.split("\n");
 		Arrays.stream(strParts).forEach(serviceTest8::populateList);
-		
+		logger.info("calculateDistance");
 		serviceTest8.calculateDistance();
 		logger.debug(serviceTest8);
 		serviceTest8.printArray();
+		logger.info("populateCircuito");
 		serviceTest8.populateCircuito();
 		if (logger.isDebugEnabled()) {
 			logger.debug(serviceTest8.toStringListaFinale());

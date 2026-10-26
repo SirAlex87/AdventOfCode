@@ -222,9 +222,9 @@ public class ServiceTest8 {
 
 	}
 
-	public double multiplyLastCoordinates() {
+	public long multiplyLastCoordinates() {
 		logger.log(Level.DEBUG,"cordinata1:{0}, cordinata2:{1}",cordinata1,cordinata2);
-		return (double)cordinata1 * cordinata2;
+		return (long)cordinata1 * cordinata2;
 	}
 
 }
