@@ -12,12 +12,18 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.javatuples.Pair;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
 public class ServiceTest12 {
+	private static Logger logger = LogManager.getLogger(ServiceTest12.class);
+	
+	
 	private Map<Integer,List<Pair<Integer,Integer>>> mappaForme=new HashMap<>();
 	private ListMultimap<String,List<Integer>> mappaGriglia=ArrayListMultimap.create();
 	private List<List<List<Pair<Integer, Integer>>>> listaTutteCombinazioniPerGriglia=new ArrayList<>();
@@ -297,7 +303,7 @@ public class ServiceTest12 {
 		mappaGriglia.entries().stream().forEach(e->{
 			listaTutteCombinazioniPerGriglia.clear();
 			String chiave=e.getKey();
-			System.out.println("griglia:"+chiave);
+			logger.log(Level.DEBUG,"griglia:{}",chiave);
 			String[] arrayDimenstions=chiave.split("x");
 			int maxDimensionX=Integer.parseInt(arrayDimenstions[0]);
 			int maxDimensionY=Integer.parseInt(arrayDimenstions[1]);
@@ -314,7 +320,7 @@ public class ServiceTest12 {
 			
 			for (Map.Entry<Integer, Integer> es : values.entrySet()) {
 			    int chiaveForme = es.getKey();
-			    System.out.println("forma:"+chiaveForme);
+			    logger.log(Level.DEBUG,"forma:{}",chiaveForme);
 			    areaCalcolata=areaCalcolata+9*es.getValue();			    
 			}
 			if(areaCalcolata<=areaGriglia) {

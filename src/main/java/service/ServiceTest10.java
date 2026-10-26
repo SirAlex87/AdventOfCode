@@ -32,10 +32,9 @@ import model.MetricheStringheCoincidenti;
 
 public class ServiceTest10 {
 	
-	private static final String STRING_ARROW = "----->";
-
 	private static Logger logger = LogManager.getLogger(ServiceTest10.class);
-
+	
+	private static final String STRING_ARROW = "----->";
 	private List<String> results = new ArrayList<>();
 	private Map<Integer, List<List<Integer>>> mappaBottoni = new HashMap<>();
 	private Map<Integer, List<Integer>> mappaVoltage = new HashMap<>();
