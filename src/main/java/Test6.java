@@ -14,23 +14,21 @@ public class Test6 {
 	
 	public static void main(String[] args) {
 		String data = null;
-		List<ArrayList<String>> lista = new ArrayList<ArrayList<String>>();
 		try {
 			//data = Utility.readFromInputStream("prova6Test.txt");
 			data = Utility.readFromInputStream("prova6.txt");
 			logger.debug(data);
 			
-
-			ServiceTest6 serviceTest6 = new ServiceTest6();
-			//extracted1(data, serviceTest6);
-			extracted2(data, serviceTest6);
+			extracted1(data);
+			extracted2(data);
 		} catch (IOException e) {
 			logger.error(e);
 		}
 		
 	}
 
-	private static void extracted1(String data, ServiceTest6 serviceTest6) {
+	private static void extracted1(String data) {
+		ServiceTest6 serviceTest6 = new ServiceTest6();
 		while(data.contains("  ")) {
 			data=data.replace("  ", " ");
 		}
@@ -53,13 +51,10 @@ public class Test6 {
 		serviceTest6.initilizeArray(strParts2);
 		Arrays.stream(strParts2).forEach(serviceTest6::populateArray);
 		logger.info(serviceTest6.calculate());
-
-		//System.out.println(serviceTest6.chechAvailableAreFresh());
-
-		// System.out.println(serviceTest1.getCount());
 	}
 
-	private static void extracted2(String data, ServiceTest6 serviceTest6) {
+	private static void extracted2(String data) {
+		ServiceTest6 serviceTest6 = new ServiceTest6();
 		String[] strParts = data.split("\n");
 		serviceTest6.findDelimitator(strParts[strParts.length-1]);
 		serviceTest6.populateSecondArray(strParts);

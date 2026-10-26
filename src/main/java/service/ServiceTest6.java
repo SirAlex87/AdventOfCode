@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 public class ServiceTest6 {
 
 	private static final Logger logger = LogManager.getLogger(ServiceTest6.class);
-	private static int contatore=0;
+	private int contatore=0;
 	private String [][] arrayFinal = null;
 	List<Integer> listaPosizioniDelimitatori= new ArrayList<>();
 	
@@ -65,53 +65,62 @@ public class ServiceTest6 {
 		BigInteger contoFinale = BigInteger.ZERO;
 
 		int numColumns = arrayFinal[0].length;
-		int limite=0;
-
 		for (int i = 0; i < numColumns; i++) {// colonne
 			BigInteger contoParziale = BigInteger.ZERO;
-			for (int j = 0; j <= arrayFinal.length - 2; j++) {// righe
 				if (arrayFinal[arrayFinal.length - 1][i].trim().equals("+")) {
-					limite=arrayFinal[j][i].length();
-					for (int k = 0; k < limite; k++) {
-						String xFinale = "";
-						for (int x = 0; x <= arrayFinal.length - 2; x++) {// righe
-							logger.log(Level.DEBUG,"X:{0} Limite:{1} k:{2} i:{3} j:{4}",x,limite,k,i,j);
-							String xTemp = arrayFinal[x][i].substring(limite - k-1,
-									limite -k);
-							if (xTemp.isBlank()) {
-								xTemp = "";
-							}
-							xFinale += xTemp;
-						}
-						contoParziale = contoParziale.add(new BigInteger(xFinale));
-					}
+					contoParziale = manageCharacterPlus(i, contoParziale);
 				}
 				if (arrayFinal[arrayFinal.length - 1][i].trim().equals("*")) {
-					if (contoParziale.equals(BigInteger.ZERO)) {
-						contoParziale = BigInteger.ONE;
-					}
-					limite=arrayFinal[j][i].length();
-
-					for (int k = 0; k < limite; k++) {
-						String xFinale = "";
-						for (int x = 0; x <= arrayFinal.length - 2; x++) {// righe
-							logger.log(Level.DEBUG,"X:{0} Limite:{1} k:{2} i:{3} j:{4}",x,limite,k,i,j);
-							String xTemp = arrayFinal[x][i].substring(limite - k-1,
-									limite -k);
-							if (xTemp.isBlank()) {
-								xTemp = "";
-							}
-							xFinale += xTemp;
-						}
-						contoParziale = contoParziale.multiply(new BigInteger(xFinale));
-					}
+					contoParziale = manageCharacterAsterisk(i, contoParziale);
 				}
-				break;
-			}
 			contoFinale = contoFinale.add(contoParziale);
 		}
 
 		return contoFinale;
+	}
+
+	private BigInteger manageCharacterAsterisk(int i, BigInteger contoParziale) {
+		int limite;
+		if (contoParziale.equals(BigInteger.ZERO)) {
+			contoParziale = BigInteger.ONE;
+		}
+		limite=arrayFinal[0][i].length();
+
+		for (int k = 0; k < limite; k++) {
+			StringBuilder result = new StringBuilder();
+			String xFinale = "";
+			for (int x = 0; x <= arrayFinal.length - 2; x++) {// righe
+				logger.log(Level.DEBUG,"X:{0} Limite:{1} k:{2} i:{3} j:{4}",x,limite,k,i,0);
+				String xTemp = arrayFinal[x][i].substring(limite - k-1,
+						limite -k);
+				if (xTemp.isBlank()) {
+					xTemp = "";
+				}
+				xFinale=result.append(xTemp).toString();
+			}
+			contoParziale = contoParziale.multiply(new BigInteger(xFinale));
+		}
+		return contoParziale;
+	}
+
+	private BigInteger manageCharacterPlus(int i, BigInteger contoParziale) {
+		int limite;
+		limite=arrayFinal[0][i].length();
+		for (int k = 0; k < limite; k++) {
+			StringBuilder result = new StringBuilder();
+			String xFinale = "";
+			for (int x = 0; x <= arrayFinal.length - 2; x++) {// righe
+				logger.log(Level.DEBUG,"X:{0} Limite:{1} k:{2} i:{3} j:{4}",x,limite,k,i,0);
+				String xTemp = arrayFinal[x][i].substring(limite - k-1,
+						limite -k);
+				if (xTemp.isBlank()) {
+					xTemp = "";
+				}
+				xFinale=result.append(xTemp).toString();
+			}
+			contoParziale = contoParziale.add(new BigInteger(xFinale));
+		}
+		return contoParziale;
 	}
 
 	public void populateSecondArray(String[] strParts) {
