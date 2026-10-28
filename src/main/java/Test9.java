@@ -17,8 +17,8 @@ public class Test9 {
 		String data = null;
 		List<ArrayList<String>> lista = new ArrayList<ArrayList<String>>();
 		try {
-			//data = Utility.readFromInputStream("prova9Test.txt");
-			data = Utility.readFromInputStream("prova9.txt");
+			data = Utility.readFromInputStream("prova9Test.txt");
+			//data = Utility.readFromInputStream("prova9.txt");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -27,8 +27,8 @@ public class Test9 {
 		
 
 		ServiceTest9 serviceTest9 = new ServiceTest9();
-		//extracted1(data, serviceTest9);
-		extracted2ThirdVersion(data, serviceTest9);
+		extracted1(data, serviceTest9);
+		//extracted2ThirdVersion(data, serviceTest9);
 	}
 
 	private static void extracted1(String data, ServiceTest9 serviceTest9) {

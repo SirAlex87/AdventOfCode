@@ -25,9 +25,9 @@ public class Test11 {
 			
 
 			ServiceTest11 serviceTest11 = new ServiceTest11();
-			//extracted1(data, serviceTest11, "you");
+			extracted1(data, serviceTest11, "you");
 			//extracted2(data, serviceTest11,"svr");
-			extractet2SecondVersion(data, serviceTest11,"svr");
+			//extractet2SecondVersion(data, serviceTest11,"svr");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -82,7 +82,7 @@ public class Test11 {
 		Arrays.stream(strParts).forEach(s -> serviceTest11.populateList(s));
 		serviceTest11.calcolaPathArrivo("out");
 		List<List<String>> results=serviceTest11.calcolaPath(partenza);
-		logger.log(Level.INFO,"tutti i path sono da {0} a fft sono:{1} ",partenza,results.size());
+		logger.log(Level.INFO,"tutti i path sono da {} a fft sono:{} ",partenza,results.size());
 	}
 	
 	private static void extracted2NV(String data, ServiceTest11 serviceTest11, String partenza) {
