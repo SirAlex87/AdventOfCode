@@ -4,9 +4,13 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ServiceTest5 {
+	
+	private static final Logger logger = LogManager.getLogger(ServiceTest5.class);
 
 	private static final String LISTA_NON_CONTIENE_ELEMENTI = "lista1 non contiene elementi";
 	private List<String> rangeFresh = new ArrayList<>();

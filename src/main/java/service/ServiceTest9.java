@@ -15,6 +15,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.javatuples.Pair;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -23,6 +25,8 @@ import com.google.common.collect.ListMultimap;
 import util.Utility;
 
 public class ServiceTest9 {
+	private static final Logger logger = LogManager.getLogger(ServiceTest5.class);
+	
 	private List<Integer> listaY = new ArrayList<>();
 	private List<Integer> listaX = new ArrayList<>();
 	private List<List<Integer>> listaFinale=new ArrayList<>();
@@ -371,7 +375,7 @@ mappaListaSimboliX = calculatedMinMaxTreeSet(mappaListaSimboliX);
 
 		for (int i = 0; i < listaSimboli.size(); i++) {
 				//System.out.print("[" + i + "][" + j + "] -> " + arraySimboli[i][j]);
-				System.out.println(listaSimboli.get(i));
+				logger.debug(listaSimboli.get(i));
 			}
 		}
 

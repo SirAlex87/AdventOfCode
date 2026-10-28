@@ -8,21 +8,20 @@ import service.ServiceTest12;
 import util.Utility;
 
 public class Test12 {
-	private static Logger logger = LogManager.getLogger(Test12.class);
+	private final static Logger logger = LogManager.getLogger(Test12.class);
 	
 	public static void main(String[] args) {
 		String data = null;
 		try {
-			 data = Utility.readFromInputStream("prova12Test.txt");
-			//data = Utility.readFromInputStream("prova12.txt");
-			// System.out.println(data);
+			 //data = Utility.readFromInputStream("prova12Test.txt");
+			data = Utility.readFromInputStream("prova12.txt");
+			logger.debug(data);
 				
 
 				ServiceTest12 serviceTest12 = new ServiceTest12();
 				extracted1(data, serviceTest12);
-				//extracted2(data, serviceTest12);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 		
 	}
@@ -34,9 +33,8 @@ public class Test12 {
 		for (String s : strParts) {
 		    acc = serviceTest12.populateList(s, acc);
 		}
-		logger.info(serviceTest12.toString());
-		//serviceTest12.calculateArea();
-		serviceTest12.calculateCombination();
+		logger.debug(serviceTest12);
+		serviceTest12.calculateArea();
 		serviceTest12.getRegionsFitted();
 	}
 	
