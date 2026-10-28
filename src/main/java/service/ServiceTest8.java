@@ -70,41 +70,45 @@ public class ServiceTest8 {
 				logger.debug("\n");
 				array[r.getRow()][r.getCol()] = 0.0;
 				array[r.getCol()][r.getRow()] = 0.0;
-				boolean isPresentFirstNumber = false;
-				boolean isPresentSecondNumber = false;
-				int indicePrimo = 0;
-				int indiceSecondo = 0;
-				int j = 0;
-				for (j = 0; j < listaFinale.size(); j++) {
-					if (listaFinale.get(j).contains(lista.get(r.getRow()))) {
-						isPresentFirstNumber = true;
-						indicePrimo = j;
-					}
-					if (listaFinale.get(j).contains(lista.get(r.getCol()))) {
-						isPresentSecondNumber = true;
-						indiceSecondo = j;
-					}
-				}
-				if (isPresentFirstNumber && !isPresentSecondNumber) {
-					listaFinale.get(indicePrimo).add(lista.get(r.getCol()));
-
-				} else if (!isPresentFirstNumber && isPresentSecondNumber) {
-					listaFinale.get(indiceSecondo).add(lista.get(r.getRow()));
-				} else if (!isPresentFirstNumber && !isPresentSecondNumber) {
-					List<String> listaTemp = new ArrayList<>();
-					listaTemp.add(lista.get(r.getRow()));
-					listaTemp.add(lista.get(r.getCol()));
-					listaFinale.add(listaTemp);
-				} else {
-					if (indicePrimo != indiceSecondo) {
-						listaFinale.get(indicePrimo).addAll(listaFinale.get(indiceSecondo));
-						listaFinale.remove(indiceSecondo);
-					}
-				}
+				calcolaLista(r);
 			}, () -> logger.debug("Nessun valore > 0.0 trovato"));
 
 		});
 
+	}
+
+	private void calcolaLista(MinResult r) {
+		boolean isPresentFirstNumber = false;
+		boolean isPresentSecondNumber = false;
+		int indicePrimo = 0;
+		int indiceSecondo = 0;
+		int j = 0;
+		for (j = 0; j < listaFinale.size(); j++) {
+			if (listaFinale.get(j).contains(lista.get(r.getRow()))) {
+				isPresentFirstNumber = true;
+				indicePrimo = j;
+			}
+			if (listaFinale.get(j).contains(lista.get(r.getCol()))) {
+				isPresentSecondNumber = true;
+				indiceSecondo = j;
+			}
+		}
+		if (isPresentFirstNumber && !isPresentSecondNumber) {
+			listaFinale.get(indicePrimo).add(lista.get(r.getCol()));
+
+		} else if (!isPresentFirstNumber && isPresentSecondNumber) {
+			listaFinale.get(indiceSecondo).add(lista.get(r.getRow()));
+		} else if (!isPresentFirstNumber) {
+			List<String> listaTemp = new ArrayList<>();
+			listaTemp.add(lista.get(r.getRow()));
+			listaTemp.add(lista.get(r.getCol()));
+			listaFinale.add(listaTemp);
+		} else {
+			if (indicePrimo != indiceSecondo) {
+				listaFinale.get(indicePrimo).addAll(listaFinale.get(indiceSecondo));
+				listaFinale.remove(indiceSecondo);
+			}
+		}
 	}
 
 	public void populateCircuito() {
@@ -120,62 +124,66 @@ public class ServiceTest8 {
 			res.ifPresentOrElse(r -> {
 				array[r.getRow()][r.getCol()] = 0.0;
 				array[r.getCol()][r.getRow()] = 0.0;
-				boolean isPresentFirstNumber = false;
-				boolean isPresentSecondNumber = false;
-				int indicePrimo = 0;
-				int indiceSecondo = 0;
-				int j = 0;
-				for (j = 0; j < listaFinale.size(); j++) {
-					if (listaFinale.get(j).contains(lista.get(r.getRow()))) {
-						isPresentFirstNumber = true;
-						indicePrimo = j;
-					}
-					if (listaFinale.get(j).contains(lista.get(r.getCol()))) {
-						isPresentSecondNumber = true;
-						indiceSecondo = j;
-					}
-				}
-				if (isPresentFirstNumber && !isPresentSecondNumber) {
-					listaFinale.get(indicePrimo).add(lista.get(r.getCol()));
-					logger.log(Level.DEBUG, () -> String.format("1. Min > 0.0 = %.3f in [%d][%d], valori: %s e %s",
-							r.getValue(), r.getRow(), r.getCol(), lista.get(r.getRow()), lista.get(r.getCol())));
-					logger.debug("\n");
-					cordinata1 = mappa.get(lista.get(r.getRow())).get(0);
-					cordinata2 = mappa.get(lista.get(r.getCol())).get(0);
-				} else if (!isPresentFirstNumber && isPresentSecondNumber) {
-					listaFinale.get(indiceSecondo).add(lista.get(r.getRow()));
-					logger.log(Level.DEBUG, () -> String.format("2. Min > 0.0 = %.3f in [%d][%d], valori: %s e %s",
-							r.getValue(), r.getRow(), r.getCol(), lista.get(r.getRow()), lista.get(r.getCol())));
-					logger.debug("\n");
-					cordinata1 = mappa.get(lista.get(r.getRow())).get(0);
-					cordinata2 = mappa.get(lista.get(r.getCol())).get(0);
-				} else if (!isPresentFirstNumber && !isPresentSecondNumber) {
-					List<String> listaTemp = new ArrayList<>();
-					listaTemp.add(lista.get(r.getRow()));
-					listaTemp.add(lista.get(r.getCol()));
-					listaFinale.add(listaTemp);
-					logger.log(Level.DEBUG, () -> String.format("3. Min > 0.0 = %.3f in [%d][%d], valori: %s e %s",
-							r.getValue(), r.getRow(), r.getCol(), lista.get(r.getRow()), lista.get(r.getCol())));
-					logger.debug("\n");
-					cordinata1 = mappa.get(lista.get(r.getRow())).get(0);
-					cordinata2 = mappa.get(lista.get(r.getCol())).get(0);
-				} else {
-					if (indicePrimo != indiceSecondo) {
-						listaFinale.get(indicePrimo).addAll(listaFinale.get(indiceSecondo));
-						listaFinale.remove(indiceSecondo);
-						logger.log(Level.DEBUG, () -> String.format("4. Min > 0.0 = %.3f in [%d][%d], valori: %s e %s",
-								r.getValue(), r.getRow(), r.getCol(), lista.get(r.getRow()), lista.get(r.getCol())));
-						logger.debug("\n");
-						cordinata1 = mappa.get(lista.get(r.getRow())).get(0);
-						cordinata2 = mappa.get(lista.get(r.getCol())).get(0);
-					}
-				}
+				calcolaLista2(r);
 			}, () -> 
 				keepGoing.set(false)
 			);
 
 		}
 
+	}
+
+	private void calcolaLista2(MinResult r) {
+		boolean isPresentFirstNumber = false;
+		boolean isPresentSecondNumber = false;
+		int indicePrimo = 0;
+		int indiceSecondo = 0;
+		int j = 0;
+		for (j = 0; j < listaFinale.size(); j++) {
+			if (listaFinale.get(j).contains(lista.get(r.getRow()))) {
+				isPresentFirstNumber = true;
+				indicePrimo = j;
+			}
+			if (listaFinale.get(j).contains(lista.get(r.getCol()))) {
+				isPresentSecondNumber = true;
+				indiceSecondo = j;
+			}
+		}
+		if (isPresentFirstNumber && !isPresentSecondNumber) {
+			listaFinale.get(indicePrimo).add(lista.get(r.getCol()));
+			logger.log(Level.DEBUG, () -> String.format("1. Min > 0.0 = %.3f in [%d][%d], valori: %s e %s",
+					r.getValue(), r.getRow(), r.getCol(), lista.get(r.getRow()), lista.get(r.getCol())));
+			logger.debug("\n");
+			cordinata1 = mappa.get(lista.get(r.getRow())).get(0);
+			cordinata2 = mappa.get(lista.get(r.getCol())).get(0);
+		} else if (!isPresentFirstNumber && isPresentSecondNumber) {
+			listaFinale.get(indiceSecondo).add(lista.get(r.getRow()));
+			logger.log(Level.DEBUG, () -> String.format("2. Min > 0.0 = %.3f in [%d][%d], valori: %s e %s",
+					r.getValue(), r.getRow(), r.getCol(), lista.get(r.getRow()), lista.get(r.getCol())));
+			logger.debug("\n");
+			cordinata1 = mappa.get(lista.get(r.getRow())).get(0);
+			cordinata2 = mappa.get(lista.get(r.getCol())).get(0);
+		} else if (!isPresentFirstNumber) {
+			List<String> listaTemp = new ArrayList<>();
+			listaTemp.add(lista.get(r.getRow()));
+			listaTemp.add(lista.get(r.getCol()));
+			listaFinale.add(listaTemp);
+			logger.log(Level.DEBUG, () -> String.format("3. Min > 0.0 = %.3f in [%d][%d], valori: %s e %s",
+					r.getValue(), r.getRow(), r.getCol(), lista.get(r.getRow()), lista.get(r.getCol())));
+			logger.debug("\n");
+			cordinata1 = mappa.get(lista.get(r.getRow())).get(0);
+			cordinata2 = mappa.get(lista.get(r.getCol())).get(0);
+		} else {
+			if (indicePrimo != indiceSecondo) {
+				listaFinale.get(indicePrimo).addAll(listaFinale.get(indiceSecondo));
+				listaFinale.remove(indiceSecondo);
+				logger.log(Level.DEBUG, () -> String.format("4. Min > 0.0 = %.3f in [%d][%d], valori: %s e %s",
+						r.getValue(), r.getRow(), r.getCol(), lista.get(r.getRow()), lista.get(r.getCol())));
+				logger.debug("\n");
+				cordinata1 = mappa.get(lista.get(r.getRow())).get(0);
+				cordinata2 = mappa.get(lista.get(r.getCol())).get(0);
+			}
+		}
 	}
 
 	private Optional<MinResult> findMinPositive() {
