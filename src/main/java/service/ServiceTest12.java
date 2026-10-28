@@ -36,7 +36,7 @@ public class ServiceTest12 {
 
 			} else if (s.contains(":")) {
 				acc = new Pair<>(Integer.parseInt(s.substring(0, s.indexOf(":"))), 0);
-				mappaForme.put(acc.getValue0(), new ArrayList());
+				mappaForme.put(acc.getValue0(), new ArrayList<>());
 			} else {
 				List<Pair<Integer,Integer>> indici = mappaForme.get(acc.getValue0());
 				if(!indici.isEmpty()) {

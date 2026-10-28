@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,13 +18,13 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.ortools.Loader;
 import com.google.ortools.linearsolver.MPConstraint;
 import com.google.ortools.linearsolver.MPObjective;
 import com.google.ortools.linearsolver.MPSolver;
 import com.google.ortools.linearsolver.MPVariable;
 
 import model.MetricheStringheCoincidenti;
+import util.Utility;
 
 public class ServiceTest10 {
 
@@ -52,7 +53,7 @@ public class ServiceTest10 {
 		}
 
 		String voltage = s.substring(s.indexOf("{") + 1, s.indexOf("}"));
-		List<Integer> listaTemp = Arrays.stream(voltage.split(",")).map(Integer::parseInt).collect(Collectors.toList());
+		List<Integer> listaTemp = Arrays.stream(voltage.split(",")).map(Integer::parseInt).toList();
 		mappaVoltage.put(results.size() - 1, listaTemp);
 	}
 
@@ -67,34 +68,37 @@ public class ServiceTest10 {
 		for (int i = 0; i < results.size(); i++) {
 			String partenza = StringUtils.repeat(".", results.get(i).length());
 			String obiettivo = results.get(i);
-			logger.debug("obiettivo:{}",obiettivo);
+			boolean continua = true;
+			logger.debug("obiettivo:{}", obiettivo);
 			Map<String, MetricheStringheCoincidenti> firstResults = premiPrimiBottoni(partenza, obiettivo,
 					mappaBottoni.get(i));
 			Optional<List<List<Integer>>> listaObiettiviRaggiunti = this.raggiuntoObiettivo(firstResults);
 			if (listaObiettiviRaggiunti.isPresent()) {
 				multimapPercorsiMinimi.put(obiettivo, listaObiettiviRaggiunti.get().size());
-				logger.debug("{}{}",STRING_ARROW,multimapPercorsiMinimi.get(obiettivo));
-				continue;
+				logger.debug("{}{}", STRING_ARROW, multimapPercorsiMinimi.get(obiettivo));
+				continua = false;
 			}
-			Map<String, MetricheStringheCoincidenti> lastResults = premiPrimiBottoni(obiettivo, partenza,
-					mappaBottoni.get(i));
-			List<List<Integer>> listaObiettiviRaggiunti2 = this.confrontoChiavi(firstResults, lastResults);
-			if (!listaObiettiviRaggiunti2.isEmpty()) {
-				multimapPercorsiMinimi.put(obiettivo, listaObiettiviRaggiunti2.size());
-				logger.debug("{}{}",STRING_ARROW,multimapPercorsiMinimi.get(obiettivo));
-				continue;
-			}
-			while (listaObiettiviRaggiunti2.isEmpty()) {
-				firstResults = this.ripremiBottoni2(i, obiettivo, firstResults);
-				listaObiettiviRaggiunti2 = this.confrontoChiavi(firstResults, lastResults);
+			if (continua) {
+				Map<String, MetricheStringheCoincidenti> lastResults = premiPrimiBottoni(obiettivo, partenza,
+						mappaBottoni.get(i));
+				List<List<Integer>> listaObiettiviRaggiunti2 = this.confrontoChiavi(firstResults, lastResults);
 				if (!listaObiettiviRaggiunti2.isEmpty()) {
+					multimapPercorsiMinimi.put(obiettivo, listaObiettiviRaggiunti2.size());
+					logger.debug("{}{}", STRING_ARROW, multimapPercorsiMinimi.get(obiettivo));
 					continue;
 				}
-				lastResults = this.ripremiBottoni2(i, partenza, lastResults);
-				listaObiettiviRaggiunti2 = this.confrontoChiavi(firstResults, lastResults);
+				while (listaObiettiviRaggiunti2.isEmpty()) {
+					firstResults = this.ripremiBottoni2(i, obiettivo, firstResults);
+					listaObiettiviRaggiunti2 = this.confrontoChiavi(firstResults, lastResults);
+					if (!listaObiettiviRaggiunti2.isEmpty()) {
+						continue;
+					}
+					lastResults = this.ripremiBottoni2(i, partenza, lastResults);
+					listaObiettiviRaggiunti2 = this.confrontoChiavi(firstResults, lastResults);
+				}
+				multimapPercorsiMinimi.put(obiettivo, listaObiettiviRaggiunti2.size());
+				logger.debug("{}{}", STRING_ARROW, multimapPercorsiMinimi.get(obiettivo));
 			}
-			multimapPercorsiMinimi.put(obiettivo, listaObiettiviRaggiunti2.size());
-			logger.debug("{}{}",STRING_ARROW,multimapPercorsiMinimi.get(obiettivo));
 		}
 
 	}
@@ -115,20 +119,19 @@ public class ServiceTest10 {
 
 	}
 
-	private Map<String, MetricheStringheCoincidenti> premiPrimiBottoni(String partenza, String obiettivo,
+	private Map<String, MetricheStringheCoincidenti> premiPrimiBottoni(String fromStart, String toEnd,
 			List<List<Integer>> listaBottoni) {
 		List<List<Integer>> listaBottoniCliccabili = new ArrayList<>();
-		if (!partenza.contains("#")) {
-			listaBottoniCliccabili = this.bottoniCliccabili(listaBottoni, obiettivo, partenza);
+		if (!fromStart.contains("#")) {
+			listaBottoniCliccabili = this.bottoniCliccabili(listaBottoni, toEnd, fromStart);
 		} else {
 			listaBottoniCliccabili.addAll(listaBottoni);
 		}
 		this.printList(listaBottoniCliccabili);
 		Map<String, MetricheStringheCoincidenti> tempResults = new HashMap<>();
 		for (int i = 0; i < listaBottoniCliccabili.size(); i++) {
-			String stringaCambiata = cliccaBottone(partenza, listaBottoniCliccabili.get(i));
-			MetricheStringheCoincidenti metricheStringheCoincidenti = this.stringheCoincidenti(obiettivo,
-					stringaCambiata);
+			String stringaCambiata = cliccaBottone(fromStart, listaBottoniCliccabili.get(i));
+			MetricheStringheCoincidenti metricheStringheCoincidenti = this.stringheCoincidenti(toEnd, stringaCambiata);
 			metricheStringheCoincidenti.getBottoniPremuti().add(listaBottoniCliccabili.get(i));
 			tempResults.put(stringaCambiata, metricheStringheCoincidenti);
 		}
@@ -140,8 +143,9 @@ public class ServiceTest10 {
 			Map<String, MetricheStringheCoincidenti> firstResults) {
 
 		Map<String, MetricheStringheCoincidenti> tempResults = new HashMap<>();
-		for (String tempStringa : firstResults.keySet()) {
-			this.premiBottoni2(tempStringa, obiettivo, mappaBottoni.get(i), firstResults.get(tempStringa), tempResults);
+		for (Entry<String, MetricheStringheCoincidenti> mappaTemp : firstResults.entrySet()) {
+			String tempStringa = mappaTemp.getKey();
+			this.premiBottoni2(tempStringa, obiettivo, mappaBottoni.get(i), mappaTemp.getValue(), tempResults);
 		}
 		return tempResults;
 	}
@@ -242,7 +246,7 @@ public class ServiceTest10 {
 			List<Integer> obiettivo = mappaVoltage.get(i);
 			int minPressioni = this.task2(obiettivo, mappaBottoni.get(i));
 			multimapPercorsiMinimi.put(obiettivo.toString(), minPressioni);
-			logger.debug("{}{}",STRING_ARROW,multimapPercorsiMinimi.get(obiettivo.toString()));
+			logger.debug("{}{}", STRING_ARROW, multimapPercorsiMinimi.get(obiettivo.toString()));
 		}
 
 	}
@@ -265,29 +269,9 @@ public class ServiceTest10 {
 	 *         https://www.youtube.com/watch?v=ce9CKjbmWN0
 	 */
 	public int task2(List<Integer> obiettivo, List<List<Integer>> listaBottoni) {
-		// Carica le librerie native di OR-Tools (obbligatorio una sola volta)
-		Loader.loadNativeLibraries();
+		MPSolver solver = Utility.loadResolver();
 
-		// Crea un solver di programmazione lineare intera.
-		// "CBC" è un solver open-source per Integer Linear Programming.
-
-		MPSolver solver = MPSolver.createSolver("CBC"); // risolutore intero
-
-		// Array delle variabili decisionali:
-		// x[i] = numero di volte che premi il bottone i
-
-		MPVariable[] x = new MPVariable[listaBottoni.size()];
-
-		// Variabili: x[i] >= 0, intero
-		for (int i = 0; i < x.length; i++) {
-
-			// Crea una variabile intera:
-			// - minimo 0
-			// - massimo infinito
-			// - nome simbolico "x_i"
-
-			x[i] = solver.makeIntVar(0, Double.POSITIVE_INFINITY, "x" + i);
-		}
+		MPVariable[] x = settingVariablesResolver(listaBottoni, solver);
 
 		// Vincoli sui 9 contatori
 		// Per ogni contatore j imponiamo un vincolo di uguaglianza
@@ -338,6 +322,24 @@ public class ServiceTest10 {
 			logger.debug("Nessuna soluzione trovata");
 		}
 		return total;
+	}
+
+	private MPVariable[] settingVariablesResolver(List<List<Integer>> listaBottoni, MPSolver solver) {
+		// Array delle variabili decisionali:
+		// x[i] = numero di volte che premi il bottone i
+		MPVariable[] x = new MPVariable[listaBottoni.size()];
+
+		// Variabili: x[i] >= 0, intero
+		for (int i = 0; i < x.length; i++) {
+
+			// Crea una variabile intera:
+			// - minimo 0
+			// - massimo infinito
+			// - nome simbolico "x_i"
+
+			x[i] = solver.makeIntVar(0, Double.POSITIVE_INFINITY, "x" + i);
+		}
+		return x;
 	}
 
 }

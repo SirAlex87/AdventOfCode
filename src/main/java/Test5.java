@@ -1,7 +1,5 @@
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,7 +12,6 @@ public class Test5 {
 	
 	public static void main(String[] args) {
 		String data = null;
-		List<ArrayList<String>> lista = new ArrayList<ArrayList<String>>();
 		try {
 			//data = Utility.readFromInputStream("prova5Test.txt");
 			data = Utility.readFromInputStream("prova5.txt");

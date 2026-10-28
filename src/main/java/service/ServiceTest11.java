@@ -32,7 +32,7 @@ public class ServiceTest11 {
 		listaChiaviDaEscludere = new ArrayList<>();
 		List<String> valoriPartenza = new ArrayList<>();
 		valoriPartenza.addAll(mappaConnessioni.get(partenza));
-		List<List<String>> results = new ArrayList();
+		List<List<String>> results = new ArrayList<>();
 		List<String> listaObiettiviRaggiunti = new ArrayList<>();
 		this.proseguiPath(valoriPartenza, listaObiettiviRaggiunti, results);
 		logger.debug(results);

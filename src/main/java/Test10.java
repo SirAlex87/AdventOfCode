@@ -19,8 +19,8 @@ public class Test10 {
 			data = Utility.readFromInputStream("prova10.txt");
 			logger.debug(data);
 			
-			extracted1(data);
-			extracted2(data);
+			extracted1(data);//428
+			extracted2(data);//16613
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

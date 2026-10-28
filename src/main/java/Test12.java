@@ -8,7 +8,7 @@ import service.ServiceTest12;
 import util.Utility;
 
 public class Test12 {
-	private final static Logger logger = LogManager.getLogger(Test12.class);
+	private static final Logger logger = LogManager.getLogger(Test12.class);
 	
 	public static void main(String[] args) {
 		String data = null;

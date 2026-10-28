@@ -23,7 +23,7 @@ public class Test11 {
 			data = Utility.readFromInputStream("prova11.txt");
 			logger.debug(data);
 			extracted1(data, "you");
-			extractet2SecondVersion(data, "svr");
+			extractet2SecondVersion(data);
 		} catch (IOException e) {
 			logger.error(e);
 		}
@@ -39,10 +39,10 @@ public class Test11 {
 		logger.log(Level.INFO, "tutti i path sono da {} a fft sono:{} ", partenza, results.size());
 	}
 
-	private static void extractet2SecondVersion(String data, String partenza) {
+	private static void extractet2SecondVersion(String data) {
 		ServiceTest11 serviceTest11 = new ServiceTest11();
 		String[] strParts = data.split("\n");
-		Arrays.stream(strParts).forEach(s -> serviceTest11.populateList(s));
+		Arrays.stream(strParts).forEach(serviceTest11::populateList);
 		BigInteger resultfftout = serviceTest11.countPaths("fft", "out", serviceTest11.getMappaConnessioni(),
 				new HashMap<>());
 		// BigInteger result = serviceTest11.countPaths("svr", "out",

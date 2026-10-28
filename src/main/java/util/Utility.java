@@ -7,7 +7,18 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.ortools.Loader;
+import com.google.ortools.linearsolver.MPSolver;
+
 public class Utility {
+	private static Logger logger = LogManager.getLogger(Utility.class);
+ private Utility() {
+  /* This utility class should not be instantiated */
+ }
+
 	
 	private static String readFromInputStream(InputStream inputStream)
 			  throws IOException {
@@ -24,18 +35,19 @@ public class Utility {
 	public static String readFromInputStream(String file) throws IOException {
 		ClassLoader classLoader=null;
 		String data= null;
+		InputStream inputStream = null;
+		
 		try {
 			classLoader = Utility.class.getClassLoader();
+			inputStream=classLoader.getResourceAsStream(file);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
-		InputStream inputStream = classLoader.getResourceAsStream(file);
+		
 		try {
 			data= readFromInputStream(inputStream);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
 		return data;
 	}
@@ -64,7 +76,19 @@ public static List<String> trasponi(List<String> input) {
         }
 
         return risultato;
-    }	
+    }
+
+
+	public static MPSolver loadResolver() {
+		// Carica le librerie native di OR-Tools (obbligatorio una sola volta)
+		Loader.loadNativeLibraries();
+
+		// Crea un solver di programmazione lineare intera.
+		// "CBC" è un solver open-source per Integer Linear Programming.
+
+		return MPSolver.createSolver("CBC"); // risolutore intero
+
+	}
 
 }
 

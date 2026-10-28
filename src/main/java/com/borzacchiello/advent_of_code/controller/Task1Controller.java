@@ -33,7 +33,7 @@ public class Task1Controller {
 			logger.info("ciao2");
 
 
-			return new ResponseEntity<String>(welcomeMessage, HttpStatus.OK);
+			return new ResponseEntity<>(welcomeMessage, HttpStatus.OK);
 		}
 
 

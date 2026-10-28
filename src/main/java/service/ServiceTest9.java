@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -22,10 +21,8 @@ import org.javatuples.Pair;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
-import util.Utility;
-
 public class ServiceTest9 {
-	private static final Logger logger = LogManager.getLogger(ServiceTest5.class);
+	private static final Logger logger = LogManager.getLogger(ServiceTest9.class);
 
 	private List<Integer> listaY = new ArrayList<>();
 	private List<Integer> listaX = new ArrayList<>();
@@ -48,30 +45,30 @@ public class ServiceTest9 {
 		listaTemp.add(numeri.get(0));
 		listaTemp.add(numeri.get(1));
 		listaFinale.add(listaTemp);
-		Pair<Integer, Integer> pair = new Pair<Integer, Integer>(numeri.get(0), numeri.get(1));
+		Pair<Integer, Integer> pair = new Pair<>(numeri.get(0), numeri.get(1));
 		listaCoppie.add(pair);
 	}
 
 	public void populateListaSimboliV3() {
-		Integer maxRows = this.findMaxLista(listaX).get();
-		Integer maxColumns = this.findMaxLista(listaY).get();
+		Integer maxRows = this.findMaxLista(listaX).orElseThrow(() -> new IllegalStateException("listaX non contiene elementi"));
+		Integer maxColumns = this.findMaxLista(listaY).orElseThrow(() -> new IllegalStateException("listaX non contiene elementi"));
 		logger.debug("maxRows:{}",maxRows);
 		logger.debug("maxColumns:{}", maxColumns);
-		IntStream.range(0, maxRows + 2).forEach(s -> {
-			mappaListaSimboliX.put(s, new TreeSet<>());
-		});
-		listaCoppie.stream().forEach(c -> {
-			mappaListaSimboliX.get(c.getValue1()).add(c.getValue0());
-		});
+		IntStream.range(0, maxRows + 2).forEach(s -> 
+			mappaListaSimboliX.put(s, new TreeSet<>())
+		);
+		listaCoppie.stream().forEach(c -> 
+			mappaListaSimboliX.get(c.getValue1()).add(c.getValue0())
+		);
 
 		mappaListaSimboliX = calculatedMinMaxTreeSet(mappaListaSimboliX);
 
-		IntStream.range(0, maxColumns + 3).forEach(s -> {
-			mappaListaSimboliY.put(s, new TreeSet<>());
-		});
-		listaCoppie.stream().forEach(c -> {
-			mappaListaSimboliY.get(c.getValue0()).add(c.getValue1());
-		});
+		IntStream.range(0, maxColumns + 3).forEach(s -> 
+			mappaListaSimboliY.put(s, new TreeSet<>())
+		);
+		listaCoppie.stream().forEach(c -> 
+			mappaListaSimboliY.get(c.getValue0()).add(c.getValue1())
+		);
 
 		mappaListaSimboliY = calculatedMinMaxTreeSet(mappaListaSimboliY);
 
@@ -90,22 +87,19 @@ public class ServiceTest9 {
 	}
 
 	public void calculateDistance2() {
-		// array=new double[listaCoppie.size()][listaCoppie.size()];
-		IntStream.range(0, listaCoppie.size()).forEach(s -> {
+		IntStream.range(0, listaCoppie.size()).forEach(s -> 
 			IntStream.range(0, listaCoppie.size()).filter(x -> x != s).forEach(x -> {
-				double distance = Math.sqrt(Math.pow(listaCoppie.get(x).getValue0() - listaCoppie.get(s).getValue0(), 2)
-						+ Math.pow(listaCoppie.get(x).getValue1() - listaCoppie.get(s).getValue1(), 2));
-				// array[s][x]=distance;
+				double distance = Math.sqrt(Math.pow(listaCoppie.get(x).getValue0() - (double)listaCoppie.get(s).getValue0(), 2)
+						+ Math.pow(listaCoppie.get(x).getValue1() - (double)listaCoppie.get(s).getValue1(), 2));
 				multimap.put(distance, listaCoppie.get(x));
 				multimap.put(distance, listaCoppie.get(s));
-			});
-		});
+			})
+		);
 
 	}
 
 	public void calculateArea() {
-		// array=new double[listaCoppie.size()][listaCoppie.size()];
-		IntStream.range(0, listaCoppie.size()).forEach(s -> {
+		IntStream.range(0, listaCoppie.size()).forEach(s -> 
 			IntStream.range(0, listaCoppie.size()).filter(x -> x != s && containsTilesV3(x, s)).forEach(x -> {
 				BigInteger coordinataY1 = null;
 				BigInteger coordinataY2 = null;
@@ -130,16 +124,14 @@ public class ServiceTest9 {
 
 				BigInteger area1 = (coordinataY1.subtract(coordinataY2).add(BigInteger.ONE))
 						.multiply(coordinataX1.subtract(coordinataX2).add(BigInteger.ONE));
-				// array[s][x]=distance;
 				multimapBigInteger.put(area1, listaCoppie.get(x));
 				multimapBigInteger.put(area1, listaCoppie.get(s));
-				double distance = Math.sqrt(Math.pow(listaCoppie.get(x).getValue0() - listaCoppie.get(s).getValue0(), 2)
-						+ Math.pow(listaCoppie.get(x).getValue1() - listaCoppie.get(s).getValue1(), 2));
-				// array[s][x]=distance;
+				double distance = Math.sqrt(Math.pow(listaCoppie.get(x).getValue0() - (double)listaCoppie.get(s).getValue0(), 2)
+						+ Math.pow(listaCoppie.get(x).getValue1() - (double)listaCoppie.get(s).getValue1(), 2));
 				multimap.put(distance, listaCoppie.get(x));
 				multimap.put(distance, listaCoppie.get(s));
-			});
-		});
+			})
+		);
 
 	}
 
@@ -162,10 +154,11 @@ public class ServiceTest9 {
 					bool = true;
 				} else {
 					bool = false;
-					break;
 				}
 			} else {
 				bool = false;
+			}
+			if(!bool) {
 				break;
 			}
 		}
@@ -194,9 +187,10 @@ public class ServiceTest9 {
 
 		Optional<Double> maxDistance = this.findMax(multimap.keySet().stream().toList());
 		Optional<BigInteger> maxArea = this.findMaxBigInteger(multimapBigInteger.keySet().stream().toList());
-		multimap.get(maxDistance.get());
-		Pair<Integer, Integer> firstCouple = multimap.get(maxDistance.get()).get(0);
-		Pair<Integer, Integer> secondCouple = multimap.get(maxDistance.get()).get(1);
+		Pair<Integer, Integer> firstCouple = multimap.get(maxDistance.orElseThrow(
+                () -> new IllegalStateException("maxDistance non contiene alcun valore"))).get(0);
+		Pair<Integer, Integer> secondCouple = multimap.get(maxDistance.orElseThrow(
+                () -> new IllegalStateException("maxDistance non contiene alcun valore"))).get(1);
 		BigInteger coordinataY1 = null;
 		BigInteger coordinataY2 = null;
 		BigInteger coordinataX1 = null;
@@ -228,7 +222,7 @@ public class ServiceTest9 {
 	public void completeMapX() {
 		Integer maxKey = Collections.max(mappaListaSimboliX.keySet());
 		Integer minKey = Collections.min(mappaListaSimboliX.keySet());
-		IntStream.rangeClosed(minKey, maxKey).forEach(x -> {
+		IntStream.rangeClosed(minKey, maxKey).forEach(x -> 
 			mappaListaSimboliY.keySet().stream().forEach(y -> {
 				TreeSet<Integer> setY = (TreeSet<Integer>) mappaListaSimboliY.get(y);
 				int firstY = setY.first();
@@ -247,8 +241,8 @@ public class ServiceTest9 {
 						}
 					}
 				}
-			});
-		});
+			})
+		);
 		mappaListaSimboliX = calculatedMinMaxTreeSet(mappaListaSimboliX);
 	}
 

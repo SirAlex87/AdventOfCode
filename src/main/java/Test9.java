@@ -18,8 +18,8 @@ public class Test9 {
 			data = Utility.readFromInputStream("prova9.txt");
 			logger.debug(data);
 			
-			extracted1(data);
-			extracted2ThirdVersion(data);
+			extracted1(data);//4758598740
+			extracted2ThirdVersion(data);//1474699155
 		} catch (IOException e) {
 			logger.error(e);
 		}
