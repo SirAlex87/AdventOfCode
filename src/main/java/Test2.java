@@ -16,7 +16,7 @@ public class Test2 {
 		try {
 			//data = Utility.readFromInputStream("prova2Test.txt");
 			data = Utility.readFromInputStream("prova2.txt");
-			// System.out.println(data);
+			logger.debug(data);
 			String[] strParts = data.split(",");			
 			extracted1(strParts);
 			extracted2(strParts);

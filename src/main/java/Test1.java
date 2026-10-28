@@ -17,7 +17,7 @@ public class Test1 {
 			Test1 test1=new Test1();
 			//data = Utility.readFromInputStream("prova1Test.txt");
 			data = Utility.readFromInputStream("prova1.txt");
-			//System.out.println(data);
+			logger.debug(data);
 			String[] strParts = data.split("\n");
 			test1.extracted1(strParts);
 			test1.extracted2(strParts);
