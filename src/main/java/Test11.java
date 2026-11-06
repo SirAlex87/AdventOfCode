@@ -8,8 +8,9 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.borzacchiello.advent_of_code.util.Utility;
+
 import service.ServiceTest11;
-import util.Utility;
 
 public class Test11 {
 

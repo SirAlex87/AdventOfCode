@@ -2,8 +2,8 @@ package com.borzacchiello.advent_of_code.mapper;
 
 import org.mapstruct.Mapper;
 
-import com.borzacchiello.dto.UserDto;
-import com.borzacchiello.advent_of_code.domain.User;
+import com.borzacchiello.advent_of_code.dto.response.UserDto;
+import com.borzacchiello.advent_of_code.entity.User;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {

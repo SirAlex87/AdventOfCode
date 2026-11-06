@@ -4,8 +4,9 @@ import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.borzacchiello.advent_of_code.util.Utility;
+
 import service.ServiceTest7;
-import util.Utility;
 
 public class Test7 {
 	private static final Logger logger = LogManager.getLogger(Test7.class);

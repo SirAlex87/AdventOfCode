@@ -16,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.borzacchiello.advent_of_code.model.MetricheStringheCoincidenti;
+import com.borzacchiello.advent_of_code.util.Utility;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.ortools.linearsolver.MPConstraint;
@@ -23,8 +25,7 @@ import com.google.ortools.linearsolver.MPObjective;
 import com.google.ortools.linearsolver.MPSolver;
 import com.google.ortools.linearsolver.MPVariable;
 
-import model.MetricheStringheCoincidenti;
-import util.Utility;
+
 
 public class ServiceTest10 {
 

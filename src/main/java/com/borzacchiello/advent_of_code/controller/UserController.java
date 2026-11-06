@@ -3,7 +3,7 @@ package com.borzacchiello.advent_of_code.controller;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.borzacchiello.advent_of_code.service.UserService;
-import com.borzacchiello.dto.UserDto;
+import com.borzacchiello.advent_of_code.dto.response.UserDto;
 import com.borzacchiello.advent_of_code.mapper.UserMapper;
 
 @RestController

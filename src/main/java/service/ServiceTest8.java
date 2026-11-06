@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import util.MinResult;
+import com.borzacchiello.advent_of_code.util.MinResult;
 
 public class ServiceTest8 {
 	private static final Logger logger = LogManager.getLogger(ServiceTest8.class);
