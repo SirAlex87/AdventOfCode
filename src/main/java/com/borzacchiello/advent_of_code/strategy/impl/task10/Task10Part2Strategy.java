@@ -1,24 +1,43 @@
 package com.borzacchiello.advent_of_code.strategy.impl.task10;
 
-import java.util.List;
+import java.math.BigInteger;
 
 import org.springframework.stereotype.Component;
 
 import com.borzacchiello.advent_of_code.model.TaskKey;
-import com.borzacchiello.advent_of_code.model.task01.Rotation;
+import com.borzacchiello.advent_of_code.model.task10.MachineConfiguration;
+import com.borzacchiello.advent_of_code.model.task10.MachineData;
 import com.borzacchiello.advent_of_code.strategy.TaskStrategy;
 
 @Component
-public class Task10Part2Strategy implements TaskStrategy<List<Rotation>, Integer> {
+public class Task10Part2Strategy
+        implements TaskStrategy<MachineData, BigInteger> {
 
-	@Override
-	public TaskKey getKey() {
-		return new TaskKey(10, 2);
-	}
+    @Override
+    public TaskKey getKey() {
+        return new TaskKey(10, 2);
+    }
 
-	@Override
-	public Integer execute(List<Rotation> rotations) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public BigInteger execute(
+            MachineData data) {
+
+        BigInteger total =
+                BigInteger.ZERO;
+
+        for (MachineConfiguration machine :
+                data.machines()) {
+
+            int minimumPresses =
+                    JoltageOptimizationCalculator
+                            .calculateMinimumPresses(
+                                    machine);
+
+            total = total.add(
+                    BigInteger.valueOf(
+                            minimumPresses));
+        }
+
+        return total;
+    }
 }
