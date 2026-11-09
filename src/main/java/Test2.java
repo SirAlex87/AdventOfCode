@@ -15,12 +15,12 @@ public class Test2 {
 	public static void main(String[] args) {
 		String data = null;
 		try {
-			//data = Utility.readFromInputStream("prova2Test.txt");
-			data = Utility.readFromInputStream("prova2.txt");
+			data = Utility.readFromInputStream("prova2Test.txt");
+			//data = Utility.readFromInputStream("prova2.txt");
 			logger.debug(data);
 			String[] strParts = data.split(",");			
-			extracted1(strParts);
-			extracted2(strParts);
+			extracted1(strParts);//8576933996
+			extracted2(strParts);//25663320831
 		} catch (IOException e) {
 			logger.error(e);
 		}

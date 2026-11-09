@@ -1,24 +1,28 @@
 package com.borzacchiello.advent_of_code.strategy.impl.task09;
 
-import java.util.List;
+import java.math.BigInteger;
 
 import org.springframework.stereotype.Component;
 
 import com.borzacchiello.advent_of_code.model.TaskKey;
-import com.borzacchiello.advent_of_code.model.task01.Rotation;
+import com.borzacchiello.advent_of_code.model.task09.TileData;
 import com.borzacchiello.advent_of_code.strategy.TaskStrategy;
 
 @Component
-public class Task09Part1Strategy implements TaskStrategy<List<Rotation>, Integer> {
+public class Task09Part1Strategy
+        implements TaskStrategy<TileData, BigInteger> {
 
-	@Override
-	public TaskKey getKey() {
-		return new TaskKey(9, 1);
-	}
+    @Override
+    public TaskKey getKey() {
+        return new TaskKey(9, 1);
+    }
 
-	@Override
-	public Integer execute(List<Rotation> rotations) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public BigInteger execute(
+            TileData data) {
+
+        return RectangleAreaCalculator
+                .findLargestArea(
+                        data.redTiles());
+    }
 }
