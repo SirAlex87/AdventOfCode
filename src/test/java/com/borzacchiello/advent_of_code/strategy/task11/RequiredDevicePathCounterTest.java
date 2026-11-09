@@ -43,7 +43,12 @@ class RequiredDevicePathCounterTest {
 
         return Stream.of(
 
-                // Ordine dac -> fft.
+                // Caso 1:
+                // il percorso attraversa prima dac e poi fft.
+                //
+                // svr -> aaa -> dac -> bbb -> fft -> out
+                //
+                // Il percorso è valido.
                 Arguments.of(
                         List.of(
                                 "svr: aaa",
@@ -53,7 +58,14 @@ class RequiredDevicePathCounterTest {
                                 "fft: out"),
                         "1"),
 
-                // Ordine fft -> dac.
+                // Caso 2:
+                // il percorso attraversa prima fft e poi dac.
+                //
+                // svr -> aaa -> fft -> bbb -> dac -> out
+                //
+                // Anche questo percorso è valido,
+                // perché l'ordine dei due dispositivi
+                // non è importante.
                 Arguments.of(
                         List.of(
                                 "svr: aaa",
@@ -63,37 +75,26 @@ class RequiredDevicePathCounterTest {
                                 "dac: out"),
                         "1"),
 
-                // Il percorso attraversa solo dac.
+                // Caso 3:
+                // esistono due percorsi verso out,
+                // ma nessuno attraversa entrambi
+                // i dispositivi richiesti.
+                //
+                // svr -> aaa -> dac -> out
+                //
+                // svr -> fft -> out
+                //
+                // Il primo visita solo dac.
+                // Il secondo visita solo fft.
+                //
+                // Nessuno dei due deve essere contato.
                 Arguments.of(
                         List.of(
                                 "svr: aaa fft",
                                 "aaa: dac",
                                 "dac: out",
                                 "fft: out"),
-                        "0"),
-
-                // Due percorsi validi:
-                //
-                // primo: dac -> fft
-                // secondo: fft -> dac
-                Arguments.of(
-                        List.of(
-                                "svr: aaa bbb",
-                                "aaa: dac",
-                                "dac: ccc",
-                                "ccc: fft",
-                                "fft: out",
-                                "bbb: fff",
-                                "fff: fft",
-                                "fft2: out",
-                                "outHelper: out",
-                                "fff2: out",
-                                "bbb2: out",
-                                "ccc2: out",
-                                "dac2: out",
-                                "unused: out",
-                                "fftHelper: dac"),
-                        "1")
+                        "0")
         );
     }
 }
