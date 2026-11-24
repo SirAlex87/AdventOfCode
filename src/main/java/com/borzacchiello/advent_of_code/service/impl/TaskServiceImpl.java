@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.borzacchiello.advent_of_code.dto.request.TaskExecutionRequest;
 import com.borzacchiello.advent_of_code.dto.response.TaskResult;
 import com.borzacchiello.advent_of_code.exception.InvalidFileException;
 import com.borzacchiello.advent_of_code.exception.InvalidTaskInputException;
@@ -100,11 +101,12 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public TaskResult execute(
-            int task,
-            int part,
-            MultipartFile file)
+    		TaskExecutionRequest request)
             throws InvalidFileException, TaskNotFoundException, InvalidTaskInputException {
 
+    	int task = request.getTask();
+        int part = request.getPart();
+        MultipartFile file = request.getFile();
         fileValidator.validate(file);
 
         List<String> lines = readFile(file);

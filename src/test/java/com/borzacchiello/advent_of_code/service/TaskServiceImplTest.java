@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
+import com.borzacchiello.advent_of_code.dto.request.TaskExecutionRequest;
 import com.borzacchiello.advent_of_code.dto.response.TaskResult;
 import com.borzacchiello.advent_of_code.model.TaskKey;
 import com.borzacchiello.advent_of_code.model.task01.Direction;
@@ -88,9 +89,11 @@ class TaskServiceImplTest {
 
         when(strategy.execute(rotations))
                 .thenReturn(1);
+        
+        TaskExecutionRequest request = TaskExecutionRequest.builder().task(1).part(1).file(file).build();
 
         TaskResult result =
-                service.execute(1, 1, file);
+                service.execute(request);
 
         assertAll(
                 () -> assertEquals(1, result.task()),

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.borzacchiello.advent_of_code.dto.request.TaskExecutionRequest;
 import com.borzacchiello.advent_of_code.dto.response.TaskResult;
 import com.borzacchiello.advent_of_code.exception.InvalidFileException;
 import com.borzacchiello.advent_of_code.exception.InvalidTaskInputException;
@@ -23,53 +24,45 @@ import com.borzacchiello.advent_of_code.service.TaskService;
 
 /**
  * provare sul browser http://localhost:8080/api/tasks/ciao
- * http://localhost:8080/swagger-ui/index.html
- * http://localhost:8080/h2-console
+ * http://localhost:8080/swagger-ui/index.html http://localhost:8080/h2-console
  */
 @RestController
 @CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api/tasks")
 public class TaskController {
-	
+
 	private static final Logger logger = LogManager.getLogger(TaskController.class);
-	
+
 	@Value("${welcome.message}")
-	    private String welcomeMessage;
-	
+	private String welcomeMessage;
+
 	private TaskService taskService;
-	
+
 	public TaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
-	
-	
+		this.taskService = taskService;
+	}
+
 	// ------------------- Ricerca Per Codice ------------------------------------
-	//api/tasks/ciao
-		@GetMapping(value = "/ciao", produces = "application/json")
-		public ResponseEntity<String> helloWorld()  
-				
-		{
-			logger.info("ciao2");
+	// api/tasks/ciao
+	@GetMapping(value = "/ciao", produces = "application/json")
+	public ResponseEntity<String> helloWorld()
 
+	{
+		logger.info("ciao2");
 
-			return new ResponseEntity<>(welcomeMessage, HttpStatus.OK);
-		}
-		
-		 @PostMapping(
-	        value = "/{task}/parts/{part}",
-	        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-	    )
-	    public ResponseEntity<TaskResult> execute(
-	            @PathVariable int task,
-	            @PathVariable int part,
-	            @RequestParam MultipartFile file) throws InvalidTaskInputException, InvalidFileException, TaskNotFoundException {
+		return new ResponseEntity<>(welcomeMessage, HttpStatus.OK);
+	}
 
-	        TaskResult result = taskService.execute(task, part, file);
-			
+	@PostMapping(value = "/{task}/parts/{part}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<TaskResult> execute(@PathVariable int task, @PathVariable int part,
+			@RequestParam MultipartFile file)
+			throws InvalidTaskInputException, InvalidFileException, TaskNotFoundException {
 
-	        return ResponseEntity.ok(result);
-	    }
+		TaskExecutionRequest request = TaskExecutionRequest.builder().task(task).part(part).file(file).build();
 
+		TaskResult result = taskService.execute(request);
 
+		return ResponseEntity.ok(result);
+	}
 
 }
