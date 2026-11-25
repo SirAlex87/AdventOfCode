@@ -41,3 +41,4 @@ HEALTHCHECK \
     CMD curl -fsS http://127.0.0.1:8080/actuator/health || exit 1
 
 ENTRYPOINT ["java", "-jar", "application.jar"]
+LABEL org.opencontainers.image.source="https://github.com/SirAlex87/AdventOfCode"
