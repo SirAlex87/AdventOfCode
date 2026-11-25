@@ -28,3 +28,9 @@ jobs:
 
       - name: Build and test with Maven
         run: mvn --batch-mode clean verify
+
+      - name: Upload application artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: adventofcode-jar
+          path: target/AdventOfCode-0.0.1-SNAPSHOT.jar
